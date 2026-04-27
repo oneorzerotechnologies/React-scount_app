@@ -48,14 +48,14 @@ What we need to ship to **Apple App Store** and **Google Play Store**. Use this 
 >
 > **What you can do on mobile:**
 > • See where you stand at a glance — revenue, outstanding, cash on hand
-> • Send invoices and record payments in seconds
+> • Send invoices and chase overdues in seconds
 > • Capture expense receipts with your camera
 > • Look up customers, vendors, and invoice history
 > • Get notified the moment an invoice is paid
 >
 > **Made for the moments you're not at a desk.** scount on mobile is fast, focused, and works in light or dark mode. Your data stays in sync with the web at every keystroke — no nightly batches, no spreadsheets.
 >
-> Need full bookkeeping, year-end closing, or bank reconciliation? Sign in at app.scount.my on the web — same account, same workspace.
+> Need full bookkeeping, year-end closing, or bank reconciliation? Sign in at scount.my on the web — same account, same workspace.
 >
 > Built in Malaysia. Free to start.
 

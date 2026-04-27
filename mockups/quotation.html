@@ -83,7 +83,7 @@
                     <div class="island"></div>
                     <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
 
-                    <div class="screen-body">
+                    <div class="screen-body !pb-[68px]">
                         <!-- Header -->
                         <div class="flex items-center justify-between">
                             <div class="text-[18px] font-bold tracking-tight text-slate-900 dark:text-moss-100">Quotations</div>
@@ -159,6 +159,32 @@
                         </div>
                     </div>
 
+                    <!-- Tab bar -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+                                <span class="text-[9px]">Home</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
+                                <span class="text-[9px] font-semibold">Quotation</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg>
+                                <span class="text-[9px]">Invoice</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span class="text-[9px]">Contacts</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                                <span class="text-[9px]">More</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="home-bar"></div>
                 </div>
             </div>
@@ -176,16 +202,21 @@
                     <div class="island"></div>
                     <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
 
-                    <div class="screen-body !pb-[80px]">
+                    <div class="screen-body !pb-[120px]">
                         <!-- Header -->
                         <div class="flex items-center justify-between">
                             <button class="w-8 h-8 rounded-full grid place-items-center text-slate-700 dark:text-moss-100/80">
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
                             </button>
                             <div class="text-[14px] font-mono font-semibold text-slate-700 dark:text-moss-100/80">QT-036</div>
-                            <button class="w-8 h-8 rounded-full grid place-items-center text-slate-700 dark:text-moss-100/80">
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
-                            </button>
+                            <div class="flex items-center gap-0.5">
+                                <button class="w-8 h-8 rounded-full grid place-items-center text-moss-700 dark:text-moss-300" aria-label="Edit">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+                                </button>
+                                <button class="w-8 h-8 rounded-full grid place-items-center text-slate-700 dark:text-moss-100/80" aria-label="More">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Status badge -->
@@ -238,21 +269,41 @@
                             </div>
                         </div>
 
-                        <!-- Dates -->
-                        <div class="mt-2 grid grid-cols-2 gap-2 text-[10px]">
+                        <!-- Dates + delivery -->
+                        <div class="mt-2 grid grid-cols-3 gap-2 text-[10px]">
                             <div class="rounded-lg bg-white dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 px-2 py-1.5">
                                 <div class="text-slate-500 dark:text-moss-300/70 uppercase tracking-wider text-[9px]">Issued</div>
-                                <div class="font-semibold text-slate-900 dark:text-moss-100">22 Apr 2026</div>
+                                <div class="font-semibold text-slate-900 dark:text-moss-100">22 Apr</div>
                             </div>
                             <div class="rounded-lg bg-white dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 px-2 py-1.5">
                                 <div class="text-slate-500 dark:text-moss-300/70 uppercase tracking-wider text-[9px]">Expires</div>
-                                <div class="font-semibold text-slate-900 dark:text-moss-100">22 May 2026</div>
+                                <div class="font-semibold text-slate-900 dark:text-moss-100">22 May</div>
+                            </div>
+                            <div class="rounded-lg bg-white dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 px-2 py-1.5">
+                                <div class="text-slate-500 dark:text-moss-300/70 uppercase tracking-wider text-[9px]">Delivery</div>
+                                <div class="font-semibold text-slate-900 dark:text-moss-100">30 days</div>
+                            </div>
+                        </div>
+
+                        <!-- Additional information -->
+                        <div class="mt-2 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Additional information</div>
+                            <div class="mt-1.5 grid grid-cols-[60px_1fr] gap-x-2 gap-y-1 text-[10px]">
+                                <div class="text-slate-500 dark:text-moss-300/70">Terms</div>
+                                <div class="text-slate-900 dark:text-moss-100 truncate">Net 30 · 50% deposit on accept</div>
+                                <div class="text-slate-500 dark:text-moss-300/70">Remarks</div>
+                                <div class="text-slate-900 dark:text-moss-100 truncate">Please confirm by 30 Apr</div>
+                                <div class="flex items-center gap-1 text-slate-500 dark:text-moss-300/70">
+                                    Internal
+                                    <span class="text-[7px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-bold">PRIVATE</span>
+                                </div>
+                                <div class="text-slate-700 dark:text-moss-100/80 italic truncate">Margin 40% — repeat client</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Action bar -->
-                    <div class="absolute left-0 right-0 bottom-0 pt-2 pb-5 px-3 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                    <div class="absolute left-0 right-0 bottom-[57px] pt-2 pb-2 px-3 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
                         <div class="grid grid-cols-3 gap-2">
                             <button class="col-span-2 rounded-xl bg-moss-500 hover:bg-moss-600 text-white text-[12px] font-bold py-2.5 flex items-center justify-center gap-1.5 shadow-glow-sm">
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
@@ -265,13 +316,39 @@
                         </div>
                     </div>
 
+                    <!-- Tab bar -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+                                <span class="text-[9px]">Home</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
+                                <span class="text-[9px] font-semibold">Quotation</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg>
+                                <span class="text-[9px]">Invoice</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span class="text-[9px]">Contacts</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                                <span class="text-[9px]">More</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="home-bar"></div>
                 </div>
             </div>
             <div class="phone-label">
                 <span class="step">05B · Detail</span>
-                <span class="name">View &amp; act</span>
-                <span class="desc">Status badge up top, contact card, big total, line items, sticky action bar. For ACCEPTED quotes, "Convert to invoice" is the primary action.</span>
+                <span class="name">View · edit · delete</span>
+                <span class="desc">Pencil icon opens the same form as Create, pre-filled — that's edit. Three-dots overflow holds Duplicate, Send, Mark accepted, Delete. Additional info (terms, remarks, internal) is preserved verbatim.</span>
             </div>
         </div>
 
@@ -282,7 +359,7 @@
                     <div class="island"></div>
                     <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
 
-                    <div class="screen-body !pb-[80px]">
+                    <div class="screen-body !pb-[120px]">
                         <!-- Header -->
                         <div class="flex items-center justify-between">
                             <button class="text-[18px] text-slate-700 dark:text-moss-100/80 leading-none">×</button>
@@ -300,15 +377,19 @@
                             </button>
                         </div>
 
-                        <!-- Dates row -->
-                        <div class="mt-3 grid grid-cols-2 gap-2">
+                        <!-- Dates + delivery row -->
+                        <div class="mt-3 grid grid-cols-3 gap-2">
                             <div>
                                 <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Issued</div>
-                                <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2.5 py-2 text-[12px] text-slate-900 dark:text-moss-100">27 Apr 2026</div>
+                                <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2 py-2 text-[12px] text-slate-900 dark:text-moss-100">27 Apr</div>
                             </div>
                             <div>
                                 <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Expires</div>
-                                <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2.5 py-2 text-[12px] text-slate-900 dark:text-moss-100">27 May 2026</div>
+                                <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2 py-2 text-[12px] text-slate-900 dark:text-moss-100">27 May</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Delivery</div>
+                                <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2 py-2 text-[12px] text-slate-900 dark:text-moss-100">30d</div>
                             </div>
                         </div>
 
@@ -330,15 +411,30 @@
                             </div>
                         </div>
 
-                        <!-- Notes -->
+                        <!-- Terms & conditions -->
                         <div class="mt-3">
-                            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Notes</div>
-                            <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2.5 py-2 text-[11px] text-slate-500 dark:text-moss-300/70 italic min-h-[40px]">Net 30 from acceptance.</div>
+                            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Terms &amp; conditions</div>
+                            <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2.5 py-1.5 text-[11px] text-slate-700 dark:text-moss-100/80 leading-snug">Net 30 from acceptance. 50% non-refundable deposit upon signing.</div>
+                        </div>
+
+                        <!-- Remarks (PDF-visible) -->
+                        <div class="mt-2">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Remarks</div>
+                            <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2.5 py-1.5 text-[11px] text-slate-700 dark:text-moss-100/80 italic">Please confirm by 30 Apr.</div>
+                        </div>
+
+                        <!-- Internal remarks (PDF-hidden) -->
+                        <div class="mt-2">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold flex items-center gap-1.5">
+                                Internal remarks
+                                <span class="text-[7px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-bold">PDF-hidden</span>
+                            </div>
+                            <div class="mt-1 rounded-xl border border-amber-200 dark:border-amber-700/40 bg-amber-50/40 dark:bg-amber-900/15 px-2.5 py-1.5 text-[11px] text-slate-700 dark:text-moss-100/80 italic">Margin 40% — repeat client.</div>
                         </div>
                     </div>
 
                     <!-- Total bar -->
-                    <div class="absolute left-0 right-0 bottom-0 pt-2 pb-5 px-3 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                    <div class="absolute left-0 right-0 bottom-[57px] pt-2 pb-2 px-3 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
                         <div class="flex items-center justify-between">
                             <div>
                                 <div class="text-[9px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Total · MYR</div>
@@ -348,13 +444,39 @@
                         </div>
                     </div>
 
+                    <!-- Tab bar -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+                                <span class="text-[9px]">Home</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
+                                <span class="text-[9px] font-semibold">Quotation</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg>
+                                <span class="text-[9px]">Invoice</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span class="text-[9px]">Contacts</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                                <span class="text-[9px]">More</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="home-bar"></div>
                 </div>
             </div>
             <div class="phone-label">
-                <span class="step">05C · Create</span>
-                <span class="name">Five fields, two taps</span>
-                <span class="desc">Modal stack: contact picker, dates, line items, notes. Total recalcs live in the sticky bar; Save lands you on the new quote's detail.</span>
+                <span class="step">05C · Create &amp; edit</span>
+                <span class="name">One form, two purposes</span>
+                <span class="desc">Same form serves new + edit; header swaps to "Edit · QT-036" when editing. Delivery sits next to the dates. Remarks ride on the PDF, internal remarks don't.</span>
             </div>
         </div>
 
@@ -364,8 +486,12 @@
 <section class="mx-auto max-w-3xl px-6 pb-20 pt-8">
     <div class="rounded-2xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-6 text-sm text-slate-700 dark:text-moss-100/80 leading-relaxed">
         <div class="text-[10px] font-mono uppercase tracking-widest text-moss-700 dark:text-moss-300 font-semibold">Notes</div>
-        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Convert to invoice = one tap.</strong> On the detail screen for an ACCEPTED quote, the primary CTA fires <code class="font-mono text-moss-700 dark:text-moss-300">POST /v1/quotations/{id}/convert-to-invoice</code> and routes the user to the new invoice's detail. The quote becomes read-only and shows a "Converted to INV-00510 →" card.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">CRUD on mobile.</strong> View = detail screen (05B). Add = create screen (05C). Edit = the same create form, opened pre-filled via the pencil icon in the detail header — header swaps to "Edit · QT-036", Save calls <code class="font-mono text-moss-700 dark:text-moss-300">PATCH /v1/quotations/{id}</code>. Delete sits in the three-dots overflow, behind a confirmation sheet, and is blocked once the quote has been converted to an invoice.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Additional information.</strong> Four fields ride alongside line items: <em>Delivery days</em> (e.g. "30 days from acceptance"), <em>Terms &amp; conditions</em>, <em>Remarks</em> (visible on the PDF the customer receives), and <em>Internal remarks</em> (PDF-hidden, marked with the amber <code class="font-mono text-[10px]">PDF-hidden</code> badge). All four round-trip through both the create form and the detail view; none are lost on convert-to-invoice.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Convert to invoice = one tap.</strong> On the detail screen for an ACCEPTED quote, the primary CTA fires <code class="font-mono text-moss-700 dark:text-moss-300">POST /v1/quotations/{id}/convert-to-invoice</code> and routes the user to the new invoice's detail. The quote becomes read-only and shows a "Converted to INV-00510 →" card. Terms, remarks, and internal remarks are copied across; the user can edit them on the new invoice.</p>
         <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Status pill colours.</strong> OPEN slate, ACCEPTED moss-green, DECLINED red, EXPIRED slate (dimmed), CONVERTED moss-green with a chain icon.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Share is always one tap.</strong> The Share button in the action bar opens the OS share sheet with <code class="font-mono text-moss-700 dark:text-moss-300">share_url</code> from the detail response (a signed link to <code class="font-mono text-moss-700 dark:text-moss-300">scount.my/q/&lt;token&gt;</code>). Internal remarks are stripped from the rendered PDF, so the customer never sees them.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Tax follows the web.</strong> Whether each line item shows a tax pill, whether the totals card has a Tax row, and whether the create form offers a tax-code picker — all of it reads from <code class="font-mono text-moss-700 dark:text-moss-300">workspace.settings.tax_enabled</code> on <code class="font-mono text-moss-700 dark:text-moss-300">scount.my</code>. If the workspace runs tax-disabled, the app suppresses every tax affordance and <code class="font-mono text-moss-700 dark:text-moss-300">tax_minor</code> stays <code class="font-mono">0</code>. Mobile cannot override the setting; the user toggles it on web and the app picks it up on next refresh.</p>
     </div>
 </section>
 

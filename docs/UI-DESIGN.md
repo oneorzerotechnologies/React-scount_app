@@ -110,7 +110,7 @@ Authenticate the user with email + password. After first success, store a Sanctu
 
 ### Interactions
 - Submit success → POST `/v1/auth/login` returns token → store in Keychain → push to **03 Workspace** (or **04 Dashboard** if user has only one workspace)
-- *Forgot password* → in-app browser to `https://app.scount.my/forgot-password`
+- *Forgot password* → in-app browser to `https://scount.my/forgot-password`
 - *Create an account* → in-app browser to `https://scount.my/register`
 - Back arrow → return to **01 Landing**
 
@@ -325,12 +325,13 @@ Same layout as **05A** with these differences:
 
 Same as **05B** with these differences:
 - Big status badge: `DRAFT / SENT / PARTIALLY PAID / PAID / OVERDUE`
-- Below the amount summary, an additional **Payments** block listing recorded payments (date · method · amount) with "+ Record payment" link
-- Action bar at the bottom:
+- Below the amount summary, an additional **Payments** block listing recorded payments (date · method · amount) — read-only on mobile, marked with a "Web only" badge. Recording, voiding, and manually marking-paid all live on `scount.my`.
+- When the invoice is part of a recurring schedule, an **Upcoming cycles** card renders next, listing the next three issue dates + amounts (read from `recurrence.upcoming_cycles` on the detail response). One-off invoices omit the card. Cadence/anchor day/end-date are configured on web only.
+- Action bar at the bottom — single action for all states except `DRAFT`. Reminder-sending and payment-recording are both web-only on v1.
   - If `DRAFT`: **Send** · **Edit** · **Delete**
-  - If `SENT` or `OVERDUE`: **Record payment** (primary) · **Send reminder** · **Share**
-  - If `PAID`: **Share** · overflow (refund — Phase 2)
+  - If `SENT` / `OVERDUE` / `PAID`: **Share** (full-width). Edit lives on the pencil in the header; reminders + refunds are on web.
   - If linked to a quote: a small "From QT-038 →" pill at the top, taps back to the quote
+  - If recurring: a small "Recurring · monthly" pill next to the lineage pill
 
 ### 06C — Invoice create
 

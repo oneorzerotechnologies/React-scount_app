@@ -104,7 +104,7 @@ Phase 5  Store submission        [ ██████  ]  3 weeks
 - Empty states designed for every list screen
 - Skeleton loaders (not spinners)
 - Smooth transitions between screens (Expo Router shared element where it adds value)
-- Haptics on key actions (record-payment success, etc.)
+- Haptics on key actions (save quote, send reminder, convert-to-invoice, etc.)
 - Accessibility audit: dynamic type, VoiceOver, TalkBack
 
 ### Week 11

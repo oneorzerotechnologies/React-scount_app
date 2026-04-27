@@ -4,7 +4,7 @@ What the Laravel backend (`oneorzerotechnologies/Laravel12-scount`) needs to exp
 
 ## Conventions
 
-- **Base URL:** `https://api.scount.my` (or `https://app.scount.my/api` if a separate api subdomain is too much for v1)
+- **Base URL:** `https://api.scount.my` (or `https://scount.my/api` if a separate api subdomain is too much for v1)
 - **Versioning:** `/v1/...` prefix on every endpoint. `v1` never breaks; `v2` is a new prefix.
 - **Auth:** Laravel Sanctum personal access tokens. Bearer header on every request after login.
 - **Format:** JSON request and response. `Content-Type: application/json` and `Accept: application/json`.
@@ -51,8 +51,36 @@ What the Laravel backend (`oneorzerotechnologies/Laravel12-scount`) needs to exp
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET`  | `/v1/workspaces` | List the user's workspaces |
-| `POST` | `/v1/workspaces/{id}/select` | Set active workspace for this token |
+| `GET`  | `/v1/workspaces` | List the user's workspaces (id, name, role only) |
+| `GET`  | `/v1/workspaces/{id}` | Workspace detail incl. **settings** (currency, tax config, defaults) |
+| `POST` | `/v1/workspaces/{id}/select` | Set active workspace for this token; response carries settings inline |
+
+#### Workspace settings — response shape
+
+The settings object is the **single source of truth for the mobile UI's behaviour**. Whatever is configured on `scount.my` (currency, tax on/off, available tax codes, default due/expiry windows) flows through here; the app reads and renders accordingly. There is no mobile-side override.
+
+```json
+{
+  "id":   "uuid",
+  "name": "Acme Sdn Bhd",
+  "role": "owner",
+  "settings": {
+    "currency":                   "MYR",
+    "locale":                     "en-MY",
+    "tax_enabled":                true,
+    "default_tax_code":           "SST6",
+    "tax_codes": [
+      { "code": "SST6", "name": "SST",         "rate_pct": 6 },
+      { "code": "ZRT",  "name": "Zero-rated",  "rate_pct": 0 }
+    ],
+    "quote_expires_default_days": 30,
+    "invoice_due_default_days":   30,
+    "delivery_default_days":      30
+  }
+}
+```
+
+**Tax follows the web.** If `tax_enabled` is `false`, the app suppresses every tax-related affordance — no per-line tax pill, no Tax row in the totals card, no `tax_code` picker in the create form, and `tax_minor` on the response is always `0`. If `tax_enabled` is `true`, the app shows tax inline as in the mockups, with the picker defaulting to `default_tax_code` and offering everything in `tax_codes`. Settings are pulled fresh on dashboard refresh and on workspace switch — the user never has to log out for an admin's tax-config change to take effect.
 
 ### Dashboard
 
@@ -121,64 +149,100 @@ Aligned with the Screen 04 mockup. Quote-to-cash only — no cash-on-hand or rev
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET`  | `/v1/quotations?status=open&cursor=&limit=20` | List with filter (`open`, `accepted`, `declined`, `expired`, `all`) |
-| `GET`  | `/v1/quotations/{id}` | Detail with line items |
-| `POST` | `/v1/quotations` | Create |
-| `POST` | `/v1/quotations/{id}/accept` | Mark as accepted (button on the detail screen) |
-| `POST` | `/v1/quotations/{id}/decline` | Mark as declined |
-| `POST` | `/v1/quotations/{id}/convert-to-invoice` | One-tap conversion → returns the new invoice's id and ref |
-| `GET`  | `/v1/quotations/{id}/pdf` | Returns a signed share URL |
+| `GET`    | `/v1/quotations?status=open&cursor=&limit=20` | List with filter (`open`, `accepted`, `declined`, `expired`, `all`) |
+| `GET`    | `/v1/quotations/{id}` | Detail with line items |
+| `POST`   | `/v1/quotations` | Create |
+| `PATCH`  | `/v1/quotations/{id}` | Edit — same payload as create. Allowed while `status` is `draft`, `open`, or `declined`; rejected with `409` once `accepted` or converted. |
+| `DELETE` | `/v1/quotations/{id}` | Soft-delete. Rejected with `409` once converted to an invoice (must delete the invoice first). |
+| `POST`   | `/v1/quotations/{id}/accept` | Mark as accepted (button on the detail screen) |
+| `POST`   | `/v1/quotations/{id}/decline` | Mark as declined |
+| `POST`   | `/v1/quotations/{id}/convert-to-invoice` | One-tap conversion → returns the new invoice's id and ref |
+| `GET`    | `/v1/quotations/{id}/pdf` | Returns a signed share URL |
 
-#### Quotation create — request shape
+#### Quotation create / edit — request shape
 ```json
 {
-  "contact_id":      "uuid",
-  "issue_date":      "2026-04-27",
-  "expires_at":      "2026-05-27",
-  "currency":        "MYR",
+  "contact_id":            "uuid",
+  "issue_date":            "2026-04-27",
+  "expires_at":            "2026-05-27",
+  "delivery_days":         30,
+  "currency":              "MYR",
   "line_items": [
     { "description": "Audit retainer · April",  "quantity": 1, "unit_price_minor": 800000, "tax_code": "SST6" },
     { "description": "Onboarding workshop",      "quantity": 4, "unit_price_minor": 50000,  "tax_code": null }
   ],
-  "notes":           "Net 30 from acceptance."
+  "terms_and_conditions":  "Net 30 from acceptance. 50% non-refundable deposit upon signing.",
+  "remarks":               "Please confirm by 30 Apr.",
+  "internal_remarks":      "Margin 40% — repeat client."
 }
 ```
+
+`delivery_days` is an integer count of days; the app renders it as "Within N days". `remarks` is rendered on the customer-facing PDF; `internal_remarks` is **never** included on the PDF and is only visible to workspace members.
 
 #### Quotation detail — response shape
 ```json
 {
-  "id":              "uuid",
-  "ref":             "QT-038",
-  "status":          "sent",
-  "issue_date":      "2026-04-25",
-  "expires_at":      "2026-05-25",
-  "contact":         { "id": "uuid", "name": "CityWorks" },
-  "currency":        "MYR",
-  "subtotal_minor":  820000,
-  "tax_minor":       49200,
-  "total_minor":     869200,
-  "line_items":      [ /* same shape as create */ ],
-  "notes":           "Net 30 from acceptance.",
-  "linked_invoice":  null,
-  "share_url":       "https://app.scount.my/q/abc123",
-  "created_at":      "2026-04-25T10:00:00Z",
-  "updated_at":      "2026-04-25T10:00:00Z"
+  "id":                    "uuid",
+  "ref":                   "QT-038",
+  "status":                "sent",
+  "issue_date":            "2026-04-25",
+  "expires_at":            "2026-05-25",
+  "delivery_days":         30,
+  "contact":               { "id": "uuid", "name": "CityWorks" },
+  "currency":              "MYR",
+  "subtotal_minor":        820000,
+  "tax_minor":             49200,
+  "total_minor":           869200,
+  "line_items":            [ /* same shape as create */ ],
+  "terms_and_conditions":  "Net 30 from acceptance. 50% non-refundable deposit upon signing.",
+  "remarks":               "Please confirm by 30 Apr.",
+  "internal_remarks":      "Margin 40% — repeat client.",
+  "linked_invoice":        null,
+  "share_url":             "https://scount.my/q/abc123",
+  "created_at":            "2026-04-25T10:00:00Z",
+  "updated_at":            "2026-04-25T10:00:00Z"
 }
 ```
 
-After conversion, `linked_invoice = { "id": "...", "ref": "INV-00510" }` and the quote becomes read-only.
+After conversion, `linked_invoice = { "id": "...", "ref": "INV-00510" }` and the quote becomes read-only. All four additional-info fields (`delivery_days`, `terms_and_conditions`, `remarks`, `internal_remarks`) are **copied verbatim** onto the new invoice; the user can edit them on the invoice without affecting the source quote.
 
 ### Invoices
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET`  | `/v1/invoices?status=overdue&cursor=&limit=20` | List with filter (`draft`, `sent`, `paid`, `overdue`, `all`) |
-| `GET`  | `/v1/invoices/{id}` | Detail with line items + payment history |
-| `POST` | `/v1/invoices` | Create (also the target of `convert-to-invoice` server-side) |
-| `POST` | `/v1/invoices/{id}/payments` | Record payment |
-| `GET`  | `/v1/invoices/{id}/pdf` | Returns a signed share URL |
+| `GET`    | `/v1/invoices?status=overdue&cursor=&limit=20` | List with filter (`draft`, `sent`, `paid`, `overdue`, `all`) |
+| `GET`    | `/v1/invoices/{id}` | Detail with line items + payment history |
+| `POST`   | `/v1/invoices` | Create (also the target of `convert-to-invoice` server-side) |
+| `PATCH`  | `/v1/invoices/{id}` | Edit — same payload as create. Allowed while `status` is `draft` or `sent` with no payments recorded; otherwise `409`. |
+| `DELETE` | `/v1/invoices/{id}` | Soft-delete. Rejected with `409` once any payment is recorded on web (payments must be voided there first). |
+| `GET`    | `/v1/invoices/{id}/pdf` | Returns a signed share URL |
 
-Invoice request/response shapes mirror Quotation but with `due_date` instead of `expires_at` and an additional `paid_minor` / `payments[]` block in the detail response.
+> **Reminders are web-only on v1.** No `POST /v1/invoices/{id}/reminders` is exposed to the mobile token. Sending a payment reminder is done from `scount.my` where the user can preview tone and recipient list. Mobile's role on overdues is to surface them on the dashboard and let the user forward the share link directly.
+
+> **Payments are web-only on v1.** There is intentionally no `POST /v1/invoices/{id}/payments` endpoint exposed to the mobile token. The `payments[]` array on `GET /v1/invoices/{id}` is read-only. Recording, voiding, or manually marking paid all happen on `scount.my` behind the desktop confirmation flow. The mobile app surfaces computed status (`paid`, `partially_paid`, `unpaid`, `overdue`) and the read-only payment list, and gets paid-status notifications via push.
+
+#### Billing cycles (recurring invoices)
+
+When an invoice belongs to a recurring schedule configured on web, the detail response carries an additional `recurrence` object. The mobile **Upcoming cycles** card in 06B reads from this; one-off invoices return `recurrence: null` and the card is omitted. Cadence, anchor day, and end-date are configured on `scount.my` only — there is no mobile endpoint to create or modify a recurrence.
+
+```json
+"recurrence": {
+  "enabled":         true,
+  "frequency":       "monthly",
+  "anchor_day":      23,
+  "next_at":         "2026-05-23",
+  "ends_at":         null,
+  "upcoming_cycles": [
+    { "issue_date": "2026-05-23", "amount_minor": 620000, "currency": "MYR" },
+    { "issue_date": "2026-06-23", "amount_minor": 620000, "currency": "MYR" },
+    { "issue_date": "2026-07-23", "amount_minor": 620000, "currency": "MYR" }
+  ]
+}
+```
+
+`upcoming_cycles` is capped at 3 entries to keep the mobile card scannable; the full schedule lives on the web detail page.
+
+Invoice request/response shapes mirror Quotation including all four additional-info fields, but with `due_date` instead of `expires_at`, and an additional `paid_minor` / `payments[]` block plus the optional `recurrence` block in the detail response.
 
 ### Contacts
 
@@ -283,15 +347,15 @@ Re-estimated against the narrowed v1 surface (no expenses, no separate vendor en
 | Sanctum personal access token endpoints (login/logout/refresh/me) | 2 days |
 | Workspace selection middleware (existing concept on web — reuse) | 1 day |
 | `/v1/dashboard` quote-to-cash aggregation (you're owed, open quotes, overdue, collected 30d, recent activity) | 3 days |
-| Quotation list + detail + create + accept / decline + convert-to-invoice | 5 days |
-| Invoice list + detail + create + record-payment | 4 days |
+| Quotation list + detail + create + edit + delete + accept / decline + convert-to-invoice | 6 days |
+| Invoice list + detail (incl. recurrence read) + create + edit + delete (no record-payment, no send-reminder — both web-only) | 4 days |
 | Contact endpoints (unified clients & suppliers with `type` filter) | 2 days |
 | Device registration + push token table | 1 day |
 | Version-check endpoint | 0.5 day |
 | API rate limiting middleware | 0.5 day |
 | API docs (OpenAPI / Scribe) | 2 days |
-| **Total** | **~21 dev-days (≈ 4–5 weeks part-time)** |
+| **Total** | **~22 dev-days (≈ 4–5 weeks part-time)** |
 
-The total is unchanged from the previous estimate — the time we save by dropping expenses + vendor CRUD is reinvested in the quotation endpoints (especially convert-to-invoice, which has to handle tax recalc, ledger postings, and idempotency).
+Net change vs. the previous estimate: +2 days for edit + delete on both quotations and invoices (with their lifecycle guards); −1 day net for dropping both record-payment and send-reminder from the mobile surface (web-only on v1) while picking up the recurrence read on the detail response.
 
 This needs to be done in parallel with mobile Phase 1 — backend dev should aim to have auth + dashboard live by end of mobile Week 1.

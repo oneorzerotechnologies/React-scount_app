@@ -6,7 +6,7 @@ Native iOS and Android companion app for the scount.my cloud accounting platform
 
 ## What this app is for
 
-Mobile is for **on-the-go capture and oversight**, not heavy data entry. The web app (`app.scount.my`) stays the primary surface for closing books, running reports, and complex bookkeeping. The mobile app is for the moments when you're not at a desk:
+Mobile is for **on-the-go capture and oversight**, not heavy data entry. The web app (`scount.my`) stays the primary surface for closing books, running reports, and complex bookkeeping. The mobile app is for the moments when you're not at a desk:
 
 - "Send the invoice now, before they leave."
 - "Snap the receipt, classify it later."
@@ -38,7 +38,7 @@ Open in any browser. Each file has a light/dark toggle in the top bar.
 
 ## Quick links
 
-- Web app: https://app.scount.my
+- Web app: https://scount.my
 - Marketing site: https://scount.my
 - Backend repo: `oneorzerotechnologies/Laravel12-scount`
 - This app's GitHub repo (when created): `oneorzerotechnologies/scount_app`

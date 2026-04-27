@@ -9,7 +9,7 @@ The mobile app is **not a port of the web app**. The web app stays primary for e
 ## 2. Target users
 
 - **Solo founders & freelancers** — on the move, capturing receipts, sending invoices from their phone.
-- **SME owners** — checking cash position between meetings, approving payments, getting paged when an invoice is paid.
+- **SME owners** — checking cash position between meetings, getting paged when an invoice is paid.
 - **Cashiers (POS)** — *Phase 2* — ringing up sales on a tablet at the counter.
 
 Not targeted in v1: accountants doing books, finance teams running close.
@@ -33,10 +33,10 @@ Not targeted in v1: accountants doing books, finance teams running close.
 | **Auth** | Email/password login, 5-second branded splash, biometric unlock (Face ID / Touch ID / Android biometric) from session 2, workspace switcher for multi-business users |
 | **Dashboard (Home)** | "You're owed" hero (outstanding amount), Open quotes / Overdue invoices 2-up, 30-day collected chart, two quick actions (+ Quote, + Invoice), recent activity feed |
 | **Quotation** | List with filters (open / accepted / declined / expired), detail view, create in ≤ 5 fields, send via email/share, **convert quote → invoice** in one tap |
-| **Invoice** | List with filters (draft / sent / paid / overdue), detail view, create, record payment, send via email/share |
+| **Invoice** | List with filters (draft / sent / paid / overdue), detail view, create, edit, send reminder, share via email/link. *Payment recording is web-only on v1 — mobile shows payment status as read-only.* |
 | **Contacts** | Unified parties directory with a segmented Clients / Suppliers toggle inside. Searchable list per segment, detail card, create new contact of either type. Precondition for quotes, invoices, and the Phase-2 bills/expenses flows. |
 | **Notifications** | Push: quote accepted, quote viewed, invoice paid, invoice overdue, weekly digest |
-| **More tab** | Switch workspace, change theme, sign out, version, send feedback, "Get the rest on the web" (deep-link to app.scount.my) |
+| **More tab** | Switch workspace, change theme, sign out, version, send feedback, "Get the rest on the web" (deep-link to scount.my) |
 
 ### Explicitly NOT in v1
 
