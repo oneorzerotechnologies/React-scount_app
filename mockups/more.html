@@ -84,54 +84,46 @@
                         <!-- Title -->
                         <div class="text-[18px] font-bold tracking-tight text-slate-900 dark:text-moss-100">More</div>
 
-                        <!-- Profile card -->
-                        <div class="mt-3 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-3 flex items-center gap-2.5">
+                        <!-- Profile card (tap to edit) -->
+                        <button class="mt-3 w-full rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-2.5 flex items-center gap-2.5 text-left">
                             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[14px] font-bold">E</div>
                             <div class="flex-1 min-w-0">
-                                <div class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">Eva Tan</div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">Eva Tan</span>
+                                    <span class="text-[8px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-moss-100 dark:bg-moss-900/50 text-moss-700 dark:text-moss-300 font-bold">OWNER</span>
+                                </div>
                                 <div class="text-[10px] text-slate-500 dark:text-moss-300/70">eva@acme.co</div>
                             </div>
-                            <span class="text-[8px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-moss-100 dark:bg-moss-900/50 text-moss-700 dark:text-moss-300 font-bold">OWNER</span>
-                        </div>
+                            <svg class="w-3.5 h-3.5 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
 
                         <!-- Active workspace -->
-                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Workspace</div>
-                        <button class="mt-1 w-full rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-2.5 flex items-center gap-2.5">
+                        <button class="mt-2 w-full rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-2.5 flex items-center gap-2.5 text-left">
                             <div class="w-7 h-7 rounded-md bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[11px] font-bold">A</div>
-                            <div class="flex-1 text-left">
+                            <div class="flex-1">
                                 <div class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">Acme Sdn Bhd</div>
                                 <div class="text-[9px] text-slate-500 dark:text-moss-300/70">Switch workspace · 3 available</div>
                             </div>
                             <svg class="w-3.5 h-3.5 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
                         </button>
 
-                        <!-- Account section -->
-                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Account</div>
+                        <!-- Preferences -->
+                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Preferences</div>
                         <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 divide-y divide-slate-200 dark:divide-moss-900/40 overflow-hidden">
-                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
-                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Profile</span>
-                                <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-                            </button>
-                            <div class="w-full px-3 py-2 flex items-center gap-2">
+                            <div class="w-full px-3 py-1.5 flex items-center gap-2">
                                 <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 11c0 5-3 8-3 8"/><path d="M14 14a8 8 0 0 0-8-8"/><path d="M17 21a18.4 18.4 0 0 0-2-9 4 4 0 0 0-7-1"/><path d="M5 12V8a7 7 0 0 1 12-4.9"/></svg>
                                 <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Biometric unlock</span>
                                 <span class="relative inline-block w-8 h-4 rounded-full bg-moss-500">
                                     <span class="absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-white"></span>
                                 </span>
                             </div>
-                        </div>
-
-                        <!-- Preferences -->
-                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Preferences</div>
-                        <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 divide-y divide-slate-200 dark:divide-moss-900/40 overflow-hidden">
-                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                            <button class="w-full px-3 py-1.5 flex items-center gap-2 text-left">
                                 <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/></svg>
                                 <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Appearance</span>
                                 <span class="text-[10px] text-slate-500 dark:text-moss-300/70">System</span>
                                 <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
                             </button>
-                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                            <button class="w-full px-3 py-1.5 flex items-center gap-2 text-left">
                                 <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
                                 <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Notifications</span>
                                 <span class="text-[10px] text-moss-700 dark:text-moss-300">5 of 5 on</span>
@@ -142,12 +134,12 @@
                         <!-- Support -->
                         <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Support</div>
                         <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 divide-y divide-slate-200 dark:divide-moss-900/40 overflow-hidden">
-                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                            <button class="w-full px-3 py-1.5 flex items-center gap-2 text-left">
                                 <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                                 <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Help &amp; FAQ</span>
                                 <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
                             </button>
-                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                            <button class="w-full px-3 py-1.5 flex items-center gap-2 text-left">
                                 <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                                 <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Send feedback</span>
                                 <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
@@ -155,20 +147,20 @@
                         </div>
 
                         <!-- Open on web -->
-                        <button class="mt-3 w-full rounded-xl border border-moss-200 dark:border-moss-800/70 bg-moss-50 dark:bg-moss-900/40 px-3 py-2.5 flex items-center gap-2 text-left">
+                        <button class="mt-3 w-full rounded-xl border border-moss-200 dark:border-moss-800/70 bg-moss-50 dark:bg-moss-900/40 px-3 py-2 flex items-center gap-2 text-left">
                             <svg class="w-3.5 h-3.5 text-moss-700 dark:text-moss-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                             <span class="flex-1 text-[12px] font-semibold text-moss-700 dark:text-moss-300">Get the rest on scount.my</span>
                             <span class="text-[9px] font-mono text-moss-700/70 dark:text-moss-300/70">Web ↗</span>
                         </button>
 
                         <!-- Sign out -->
-                        <button class="mt-2 w-full rounded-xl border border-red-200 dark:border-red-700/40 bg-red-50/60 dark:bg-red-900/20 px-3 py-2.5 text-[12px] font-bold text-red-700 dark:text-red-300 flex items-center justify-center gap-1.5">
+                        <button class="mt-2 w-full rounded-xl border border-red-200 dark:border-red-700/40 bg-red-50/60 dark:bg-red-900/20 px-3 py-2 text-[12px] font-bold text-red-700 dark:text-red-300 flex items-center justify-center gap-1.5">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                             Sign out
                         </button>
 
                         <!-- Footer -->
-                        <div class="mt-3 text-center text-[9px] text-slate-400 dark:text-moss-300/55 font-mono">
+                        <div class="mt-2 text-center text-[9px] text-slate-400 dark:text-moss-300/55 font-mono">
                             scount.my mobile · v1.0.0 · build 142
                         </div>
                     </div>

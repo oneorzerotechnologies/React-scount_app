@@ -408,13 +408,12 @@ When invoice create is triggered via **Convert quote → invoice**, the form is 
 
 **Layout (top → bottom)**
 - Title "More"
-- **Profile card** — avatar, name, email, role badge (`OWNER` / `ADMIN` / `MEMBER`)
-- **Workspace** section — a single tappable row showing the active workspace; opens the workspace switcher (same component as Screen 03)
-- **Account** section — Profile (edit), Biometric unlock toggle (default On after first successful sign-in)
-- **Preferences** section — Appearance (Light / Dark / System, sub-screen), Notifications (per-category toggles, sub-screen)
-- **Support** section — Help & FAQ, Send feedback (opens an in-app form that emails support@scount.my with device + version metadata attached)
-- **Open on web** card — moss-tinted, external-link icon, opens an in-app browser session at `scount.my` with short-lived web SSO so the user lands signed-in
-- **Sign out** — destructive-styled (red border, red text); tap surfaces a confirm sheet
+- **Profile card** — tappable; avatar, name, email, role badge (`OWNER` / `ADMIN` / `MEMBER`); opens an edit-profile sub-screen (name, password, photo). The card itself replaces a separate "Profile" row.
+- **Workspace card** — tappable row showing the active workspace; opens the workspace switcher (same component as Screen 03). No section label — the card is self-explanatory under the profile.
+- **Preferences** section — three rows, in order: Biometric unlock toggle (default On after first successful sign-in), Appearance (Light / Dark / System sub-screen), Notifications (per-category toggles, with a "5 of 5 on" status pill).
+- **Support** section — Help & FAQ, Send feedback (opens an in-app form that emails support@scount.my with device + version metadata attached).
+- **Open on web** card — moss-tinted, external-link icon; opens an in-app browser session at `scount.my` with short-lived web SSO so the user lands signed-in.
+- **Sign out** — destructive-styled (red border, red text); tap surfaces a confirm sheet.
 - **Footer** — `scount.my mobile · v1.0.0 · build 142`
 
 **States**
