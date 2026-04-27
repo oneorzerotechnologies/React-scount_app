@@ -77,12 +77,28 @@ The settings object is the **single source of truth for the mobile UI's behaviou
     ],
     "quote_expires_default_days": 30,
     "invoice_due_default_days":   30,
-    "delivery_default_days":      30
+    "delivery_default_days":      30,
+    "permissions": {
+      "quotations": { "create": true,  "update": true,  "delete": false },
+      "invoices":   { "create": false, "update": false, "delete": false },
+      "contacts":   { "create": true,  "update": true,  "delete": false }
+    }
   }
 }
 ```
 
 **Tax follows the web.** If `tax_enabled` is `false`, the app suppresses every tax-related affordance — no per-line tax pill, no Tax row in the totals card, no `tax_code` picker in the create form, and `tax_minor` on the response is always `0`. If `tax_enabled` is `true`, the app shows tax inline as in the mockups, with the picker defaulting to `default_tax_code` and offering everything in `tax_codes`. Settings are pulled fresh on dashboard refresh and on workspace switch — the user never has to log out for an admin's tax-config change to take effect.
+
+**Permissions follow the role.** `settings.permissions` is computed by the backend from the user's `role` on this workspace and shipped inline. The mobile UI reads these booleans to:
+- Hide the Edit pencil + Delete affordances on detail screens when `update` / `delete` is `false`
+- Hide the "+ New" CTA on list screens (and the empty-state CTA) when `create` is `false`
+- Render a "Read-only · <ROLE>" pill + info banner on detail screens when any write boolean is `false`
+
+The mobile client never reimplements role → permission logic. Reasonable defaults are documented in [`UI-DESIGN.md`](UI-DESIGN.md#permission-matrix-default-workspace-roles); the backend can deviate, and the mobile UI follows whatever booleans it gets.
+
+**Record-level overrides.** Individual resource detail responses (`Quotation`, `Invoice`, `Contact`) carry optional top-level booleans `can_update` and `can_delete` that override the workspace defaults for that one record. Used for cases like "members can edit their own creations but not others'". When present on a resource response, mobile prefers them; when absent, mobile falls back to `settings.permissions.<resource>.<action>`.
+
+**403 fallback.** If the user attempts an action despite the UI hiding it (race conditions, role just changed, deep-link from web), the API returns `403` with `{ "message": "...", "errors": { "permission": ["..."] } }`. Mobile renders the same bottom-sheet pattern as 409 with copy that names the role and the action — see Screen 09F in `UI-DESIGN.md`.
 
 ### Dashboard
 

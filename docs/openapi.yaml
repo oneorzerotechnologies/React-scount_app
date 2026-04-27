@@ -672,6 +672,27 @@ components:
         name:     { type: string, example: SST }
         rate_pct: { type: number, format: float, example: 6 }
 
+    ResourcePermissions:
+      type: object
+      description: |
+        Booleans the mobile UI uses to render conditional affordances —
+        hide "+ New", hide the Edit pencil, hide the Delete in overflow.
+        Computed by the backend from the user's role on the workspace;
+        the client never re-derives role → permission logic.
+      properties:
+        create: { type: boolean }
+        update: { type: boolean }
+        delete: { type: boolean }
+      required: [create, update, delete]
+
+    Permissions:
+      type: object
+      properties:
+        quotations: { $ref: '#/components/schemas/ResourcePermissions' }
+        invoices:   { $ref: '#/components/schemas/ResourcePermissions' }
+        contacts:   { $ref: '#/components/schemas/ResourcePermissions' }
+      required: [quotations, invoices, contacts]
+
     WorkspaceSettings:
       type: object
       properties:
@@ -685,6 +706,7 @@ components:
         quote_expires_default_days:   { type: integer, example: 30 }
         invoice_due_default_days:     { type: integer, example: 30 }
         delivery_default_days:        { type: integer, example: 30 }
+        permissions:                  { $ref: '#/components/schemas/Permissions' }
 
     Workspace:
       allOf:
@@ -756,6 +778,8 @@ components:
         - $ref: '#/components/schemas/QuotationSummary'
         - type: object
           properties:
+            can_update:           { type: boolean, description: 'Record-level override; falls back to workspace.settings.permissions.quotations.update when absent' }
+            can_delete:           { type: boolean, description: 'Record-level override; falls back to workspace.settings.permissions.quotations.delete when absent' }
             delivery_days:        { type: integer, nullable: true }
             contact:
               type: object
@@ -853,6 +877,8 @@ components:
         - $ref: '#/components/schemas/InvoiceSummary'
         - type: object
           properties:
+            can_update:    { type: boolean, description: 'Record-level override; falls back to workspace.settings.permissions.invoices.update when absent' }
+            can_delete:    { type: boolean, description: 'Record-level override; falls back to workspace.settings.permissions.invoices.delete when absent' }
             delivery_days: { type: integer, nullable: true }
             contact:
               type: object
@@ -913,6 +939,8 @@ components:
         - type: object
           properties:
             id:                { type: string, format: uuid }
+            can_update:        { type: boolean, description: 'Record-level override; falls back to workspace.settings.permissions.contacts.update when absent' }
+            can_delete:        { type: boolean, description: 'Record-level override; falls back to workspace.settings.permissions.contacts.delete when absent' }
             outstanding_minor: { type: integer, description: Sum of unpaid invoice balances }
             invoice_count:     { type: integer }
             quote_count:       { type: integer }

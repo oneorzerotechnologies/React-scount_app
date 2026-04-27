@@ -526,7 +526,73 @@ The non-forcing variant ("update_available") is a dismissable toast on the dashb
 
 **Skeleton, not spinner.** Spinners are reserved for "I genuinely don't know how long this'll take" — biometric prompts and PDF generation. Everything with a known shape gets a skeleton.
 
-### 09F — 409 Conflict (lifecycle guard hit)
+### 09F — 403 Permission denied
+
+**When:** the server rejects an action with `403` because the user's role doesn't grant it. Examples:
+- A `MEMBER` trying to delete an invoice
+- A `MEMBER` trying to edit a quote they didn't create
+- An `ADMIN` trying to delete a workspace (owner-only)
+
+**Layout**
+- Bottom sheet (same component as 09H), differentiated only by copy + icon.
+- Slate-tinted lock icon + "You don't have permission" headline.
+- Body names the role + the action explicitly: *"Your role MEMBER on Acme Sdn Bhd doesn't allow deleting invoices. Ask the workspace owner or an admin to do it, or have them grant you the ADMIN role."*
+- Workspace owner row inline (avatar + name + role) so the user knows who to ping.
+- Dim mono line `403 · <resource>.<action> denied` for support context.
+- Two-button row: **Cancel** + **Message owner** (opens an email or in-app feedback form pre-populated with context).
+
+### 09G — Read-only detail (preventive RBAC)
+
+**When:** a user without write permission opens any list / detail / create flow. The UI hides what they can't do rather than letting them attempt and fail.
+
+**Driven by:** `workspace.settings.permissions` — a boolean map computed by the backend, e.g.
+
+```json
+"permissions": {
+  "quotations": { "create": true,  "update": false, "delete": false },
+  "invoices":   { "create": false, "update": false, "delete": false },
+  "contacts":   { "create": true,  "update": true,  "delete": false }
+}
+```
+
+The client never reimplements role → permission logic; it just consumes booleans.
+
+**Layout deltas vs. the full-access detail screen**
+- **Header** — pencil Edit icon hides if `update === false`. The three-dots overflow stays (it carries Share + View on web), but Delete is omitted from its menu when `delete === false`.
+- **Status row** — a small slate "Read-only · <ROLE>" pill renders below the status badge whenever any of `update / delete` is false. Tap → "Why?" sheet that explains and links to the workspace's role docs.
+- **Inline banner** — between the total card and the dates row: "You can view this <resource>. Editing requires ADMIN or OWNER role."
+- **Action bar** — only Share renders. (The full-access view already only had Share for invoices, so the visual difference there is just the missing pencil.)
+- **List screen** — the "+ New" CTA top-right hides if `create === false`. The empty-state CTA is also suppressed.
+
+### Permission matrix (default workspace roles)
+
+This is the backend's responsibility — the table below documents the **expected behaviour** on standard role configurations so the mobile dev can write fixtures and the backend dev can sanity-check their `permissions` resolver.
+
+| Action | Owner | Admin | Member |
+|---|:-:|:-:|:-:|
+| Quotations · view  | ✓ | ✓ | ✓ |
+| Quotations · create | ✓ | ✓ | ✓ |
+| Quotations · update | ✓ | ✓ | own only |
+| Quotations · delete | ✓ | ✓ | ✗ |
+| Quotations · accept / decline / convert | ✓ | ✓ | ✓ |
+| Invoices · view | ✓ | ✓ | ✓ |
+| Invoices · create | ✓ | ✓ | ✗ |
+| Invoices · update | ✓ | ✓ | ✗ |
+| Invoices · delete | ✓ | ✓ | ✗ |
+| Contacts · view | ✓ | ✓ | ✓ |
+| Contacts · create | ✓ | ✓ | ✓ |
+| Contacts · update | ✓ | ✓ | own only |
+| Contacts · delete | ✓ | ✓ | ✗ |
+| Workspace settings (web) | ✓ | partial | ✗ |
+| Member management (web) | ✓ | ✗ | ✗ |
+
+"own only" means the row is editable when `created_by === current_user.id`. The backend resolves this per record and returns `can_update` / `can_delete` booleans on the resource itself for record-level overrides — see *Record-level overrides* below.
+
+### Record-level overrides
+
+Workspace-level permissions are the default. Individual resources can carry `can_update` / `can_delete` booleans on their detail response that override the workspace defaults — used for the "own only" cases above. The mobile UI prefers the record-level booleans when present, falls back to workspace permissions otherwise. The 403 sheet (09F) is the unified fallback either way.
+
+### 09H — 409 Conflict (lifecycle guard hit)
 
 **When:** the server rejects a mutation with `409` because of a lifecycle guard. Examples:
 - Trying to edit an accepted or converted quote
@@ -540,12 +606,11 @@ The non-forcing variant ("update_available") is a dismissable toast on the dashb
 - Dim mono line: `<HTTP code> · <reason>` (e.g. `409 · linked_invoice exists`) for support context.
 - Two-button row: **Cancel** (closes sheet) + **Resolve action** (deep-links to wherever the unblock lives — e.g. "View invoice" for the linked-invoice case, "Void payment" for the paid-invoice case if/when that exists on mobile).
 
-Same component handles every 409 flavour; only the icon, copy, and CTA target change.
+Same component handles every 409 flavour; only the icon, copy, and CTA target change. Same component (different copy/icon) is also used for 09F.
 
 ### Other surfaces (briefly)
 
 - **Session expired (401)** — token interceptor clears `auth_store` and routes the user to `/(auth)/login`. The login screen (Screen 02) carries a one-line "Session expired — sign in again" caption when reached this way.
-- **Permission denied (403)** — same component as 09D with red icon + "You don't have permission" + a "Switch workspace" secondary action.
 - **Not found (404)** — only reachable via deep-link to a deleted record. Same component as 09D with a slate icon + "We couldn't find that" + back button.
 - **Validation error (422)** — never a screen-level state. Field-level red rings + inline error messages on the form. The `errors` map from the response drives them.
 
