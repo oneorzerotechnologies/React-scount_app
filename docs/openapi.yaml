@@ -1,0 +1,968 @@
+openapi: 3.0.3
+info:
+  title: scount.my Mobile API
+  version: 1.0.0
+  description: |
+    Backend contract for the scount.my native mobile app (iOS + Android).
+
+    This file is generated to match `docs/API-CONTRACT.md`. The contract is the
+    canonical source — when in doubt, read the markdown. The intent here is
+    to give the Laravel backend a machine-readable spec to scaffold against
+    (Scribe / Laravel OpenAPI / hand-rolled controllers, take your pick).
+
+    **Auth.** Sanctum personal access tokens, Bearer header on every endpoint
+    except `POST /v1/auth/login`.
+
+    **Money.** Always two integer fields per amount — `amount_minor` (cents)
+    + `currency` (ISO 4217). Never a float.
+
+    **Mobile-only / web-only carve-outs in v1:**
+      - `POST /v1/invoices/{id}/payments` — **not exposed** to mobile token;
+        payment recording lives on `scount.my` only.
+      - `POST /v1/invoices/{id}/reminders` — **not exposed**; reminders are
+        web-side.
+      - Recurrence (cadence, anchor day, ends_at) is **read-only on mobile**;
+        configured on web.
+
+  contact:
+    name: scount.my
+    url: https://scount.my
+    email: support@scount.my
+
+servers:
+  - url: https://api.scount.my
+    description: Production
+  - url: https://staging.api.scount.my
+    description: Staging
+  - url: https://scount.test/api
+    description: Local Herd dev
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+    description: Login / logout / refresh / me
+  - name: Workspaces
+    description: Multi-tenant workspace selection + settings (drives mobile UI behaviour)
+  - name: Dashboard
+    description: Quote-to-cash dashboard aggregation
+  - name: Quotations
+    description: Full CRUD plus accept / decline / convert-to-invoice
+  - name: Invoices
+    description: Read + create + edit + delete (no record-payment, no reminders — both web-only)
+  - name: Contacts
+    description: Unified clients + suppliers directory
+  - name: Devices
+    description: Push token registration
+  - name: Version
+    description: Update gating
+
+paths:
+
+  # =====================================================================
+  # AUTH
+  # =====================================================================
+  /v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Email + password login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, device_name]
+              properties:
+                email:    { type: string, format: email, example: eva@example.com }
+                password: { type: string, format: password }
+                device_name:
+                  type: string
+                  example: Eva's iPhone
+      responses:
+        '200':
+          description: Token + user + workspaces
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthLoginResponse'
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /v1/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Revoke current token
+      responses:
+        '204': { description: Token revoked }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /v1/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Extend current token's expiry
+      responses:
+        '200':
+          description: New expires_at
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expires_at: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /v1/auth/me:
+    get:
+      tags: [Auth]
+      summary: Current user + active workspace settings
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:             { $ref: '#/components/schemas/User' }
+                  active_workspace: { $ref: '#/components/schemas/Workspace' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # =====================================================================
+  # WORKSPACES
+  # =====================================================================
+  /v1/workspaces:
+    get:
+      tags: [Workspaces]
+      summary: List workspaces the user belongs to
+      responses:
+        '200':
+          description: Summary list (no settings)
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/WorkspaceSummary' }
+
+  /v1/workspaces/{id}:
+    get:
+      tags: [Workspaces]
+      summary: Workspace detail incl. settings
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Workspace + settings
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Workspace' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /v1/workspaces/{id}/select:
+    post:
+      tags: [Workspaces]
+      summary: Set active workspace for this token
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Now-active workspace, settings inline
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Workspace' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # =====================================================================
+  # DASHBOARD
+  # =====================================================================
+  /v1/dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Quote-to-cash dashboard aggregation
+      responses:
+        '200':
+          description: Hero, 2-up, sparkline, activity — one round trip
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Dashboard' }
+
+  # =====================================================================
+  # QUOTATIONS
+  # =====================================================================
+  /v1/quotations:
+    get:
+      tags: [Quotations]
+      summary: List quotations
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [open, accepted, declined, expired, converted, all], default: open }
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Cursor-paginated list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/QuotationSummary' }
+                  next_cursor: { type: string, nullable: true }
+    post:
+      tags: [Quotations]
+      summary: Create quotation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QuotationInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quotation' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /v1/quotations/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    get:
+      tags: [Quotations]
+      summary: Quotation detail
+      responses:
+        '200':
+          description: Full quotation incl. line items + additional info
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quotation' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Quotations]
+      summary: Edit quotation
+      description: |
+        Allowed while `status` is `draft`, `open`, or `declined`.
+        Returns `409` once accepted or converted.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QuotationInput' }
+      responses:
+        '200':
+          description: Updated quotation
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quotation' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Quotations]
+      summary: Soft-delete quotation
+      description: Rejected with `409` once converted to an invoice.
+      responses:
+        '204': { description: Deleted }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /v1/quotations/{id}/accept:
+    post:
+      tags: [Quotations]
+      summary: Mark as accepted
+      parameters: [{ $ref: '#/components/parameters/IdPath' }]
+      responses:
+        '200':
+          description: Quote with new status
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quotation' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /v1/quotations/{id}/decline:
+    post:
+      tags: [Quotations]
+      summary: Mark as declined
+      parameters: [{ $ref: '#/components/parameters/IdPath' }]
+      responses:
+        '200':
+          description: Quote with new status
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quotation' }
+
+  /v1/quotations/{id}/convert-to-invoice:
+    post:
+      tags: [Quotations]
+      summary: One-tap convert quote → invoice
+      description: |
+        Copies line items, contact, currency, and all four additional-info
+        fields (delivery_days, terms_and_conditions, remarks, internal_remarks)
+        verbatim onto the new invoice. The source quote becomes read-only and
+        gets `linked_invoice` populated.
+      parameters: [{ $ref: '#/components/parameters/IdPath' }]
+      responses:
+        '201':
+          description: Newly-created invoice
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:  { type: string, format: uuid }
+                  ref: { type: string, example: INV-00510 }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /v1/quotations/{id}/pdf:
+    get:
+      tags: [Quotations]
+      summary: Signed share-URL for the rendered PDF
+      parameters: [{ $ref: '#/components/parameters/IdPath' }]
+      responses:
+        '200':
+          description: A short-lived URL pointing at the PDF (or `scount.my/q/<token>` viewer)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  share_url: { type: string, format: uri, example: 'https://scount.my/q/abc123' }
+                  expires_at: { type: string, format: date-time }
+
+  # =====================================================================
+  # INVOICES
+  # =====================================================================
+  /v1/invoices:
+    get:
+      tags: [Invoices]
+      summary: List invoices
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [draft, sent, paid, overdue, all], default: sent }
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Cursor-paginated list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/InvoiceSummary' }
+                  next_cursor: { type: string, nullable: true }
+    post:
+      tags: [Invoices]
+      summary: Create invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InvoiceInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Invoice' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /v1/invoices/{id}:
+    parameters: [{ $ref: '#/components/parameters/IdPath' }]
+    get:
+      tags: [Invoices]
+      summary: Invoice detail
+      description: |
+        Includes payments[] (read-only), and `recurrence` when the invoice
+        is part of a recurring schedule (else null).
+      responses:
+        '200':
+          description: Full invoice detail
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Invoice' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Invoices]
+      summary: Edit invoice
+      description: |
+        Allowed while `status` is `draft` or `sent` with no payments
+        recorded; otherwise `409`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InvoiceInput' }
+      responses:
+        '200':
+          description: Updated invoice
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Invoice' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Invoices]
+      summary: Soft-delete invoice
+      description: Rejected with `409` once any payment is recorded on web.
+      responses:
+        '204': { description: Deleted }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /v1/invoices/{id}/pdf:
+    get:
+      tags: [Invoices]
+      summary: Signed share-URL for the rendered PDF
+      parameters: [{ $ref: '#/components/parameters/IdPath' }]
+      responses:
+        '200':
+          description: A short-lived URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  share_url: { type: string, format: uri, example: 'https://scount.my/i/abc123' }
+                  expires_at: { type: string, format: date-time }
+
+  # =====================================================================
+  # CONTACTS
+  # =====================================================================
+  /v1/contacts:
+    get:
+      tags: [Contacts]
+      summary: Search-aware list (clients OR suppliers)
+      parameters:
+        - name: type
+          in: query
+          required: true
+          schema: { type: string, enum: [client, supplier] }
+        - name: q
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Cursor-paginated list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Contact' }
+                  next_cursor: { type: string, nullable: true }
+    post:
+      tags: [Contacts]
+      summary: Create contact (type immutable after create)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ContactInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Contact' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /v1/contacts/{id}:
+    parameters: [{ $ref: '#/components/parameters/IdPath' }]
+    get:
+      tags: [Contacts]
+      summary: Contact detail with statement / activity summary
+      responses:
+        '200':
+          description: Full contact incl. outstanding totals
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Contact' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Contacts]
+      summary: Edit contact (type cannot change)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ContactInput'
+                - description: '`type` field is ignored — set at create time only'
+      responses:
+        '200':
+          description: Updated contact
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Contact' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  # =====================================================================
+  # DEVICES (push tokens)
+  # =====================================================================
+  /v1/devices:
+    post:
+      tags: [Devices]
+      summary: Register an Expo push token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, platform, app_version]
+              properties:
+                token:       { type: string, example: "ExponentPushToken[xxx...]" }
+                platform:    { type: string, enum: [ios, android] }
+                app_version: { type: string, example: 1.0.0 }
+      responses:
+        '201': { description: Registered }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /v1/devices/{token}:
+    delete:
+      tags: [Devices]
+      summary: Deregister on logout / uninstall
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: Deregistered }
+
+  # =====================================================================
+  # VERSION CHECK
+  # =====================================================================
+  /v1/version-check:
+    get:
+      tags: [Version]
+      summary: Update gating
+      security: []
+      parameters:
+        - name: platform
+          in: query
+          required: true
+          schema: { type: string, enum: [ios, android] }
+        - name: version
+          in: query
+          required: true
+          schema: { type: string, example: 1.0.3 }
+      responses:
+        '200':
+          description: Status + store URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:    { type: string, enum: [ok, update_available, force_update] }
+                  store_url: { type: string, format: uri }
+
+# =========================================================================
+# COMPONENTS
+# =========================================================================
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    Cursor:
+      name: cursor
+      in: query
+      schema: { type: string }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+
+  responses:
+    Unauthorized:
+      description: Token missing or invalid → app routes to login
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Authenticated but no permission for this resource
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Resource does not exist (or is not visible to this token)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Lifecycle guard hit — see `message`
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ValidationError:
+      description: Field validation failed
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    RateLimited:
+      description: Rate-limited — `Retry-After` header carries seconds
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string, example: The given data was invalid. }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+
+    User:
+      type: object
+      required: [id, name, email]
+      properties:
+        id:                   { type: string, format: uuid }
+        name:                 { type: string }
+        email:                { type: string, format: email }
+        default_workspace_id: { type: string, format: uuid }
+
+    WorkspaceSummary:
+      type: object
+      required: [id, name, role]
+      properties:
+        id:   { type: string, format: uuid }
+        name: { type: string, example: Acme Sdn Bhd }
+        role:
+          type: string
+          enum: [owner, admin, member]
+
+    TaxCode:
+      type: object
+      required: [code, name, rate_pct]
+      properties:
+        code:     { type: string, example: SST6 }
+        name:     { type: string, example: SST }
+        rate_pct: { type: number, format: float, example: 6 }
+
+    WorkspaceSettings:
+      type: object
+      properties:
+        currency:                     { type: string, example: MYR }
+        locale:                       { type: string, example: en-MY }
+        tax_enabled:                  { type: boolean }
+        default_tax_code:             { type: string, nullable: true, example: SST6 }
+        tax_codes:
+          type: array
+          items: { $ref: '#/components/schemas/TaxCode' }
+        quote_expires_default_days:   { type: integer, example: 30 }
+        invoice_due_default_days:     { type: integer, example: 30 }
+        delivery_default_days:        { type: integer, example: 30 }
+
+    Workspace:
+      allOf:
+        - $ref: '#/components/schemas/WorkspaceSummary'
+        - type: object
+          properties:
+            settings: { $ref: '#/components/schemas/WorkspaceSettings' }
+
+    AuthLoginResponse:
+      type: object
+      required: [token, expires_at, user]
+      properties:
+        token:      { type: string, example: '1|abc...xyz' }
+        expires_at: { type: string, format: date-time }
+        user:       { $ref: '#/components/schemas/User' }
+        workspaces:
+          type: array
+          items: { $ref: '#/components/schemas/WorkspaceSummary' }
+
+    LineItemInput:
+      type: object
+      required: [description, quantity, unit_price_minor]
+      properties:
+        description:      { type: string, example: Audit retainer · April }
+        quantity:         { type: number, example: 1 }
+        unit_price_minor: { type: integer, example: 800000 }
+        tax_code:         { type: string, nullable: true, example: SST6 }
+
+    LineItem:
+      allOf:
+        - $ref: '#/components/schemas/LineItemInput'
+        - type: object
+          properties:
+            line_total_minor: { type: integer }
+
+    QuotationInput:
+      type: object
+      required: [contact_id, issue_date, expires_at, currency, line_items]
+      properties:
+        contact_id:           { type: string, format: uuid }
+        issue_date:           { type: string, format: date }
+        expires_at:           { type: string, format: date }
+        delivery_days:        { type: integer, nullable: true, example: 30 }
+        currency:             { type: string, example: MYR }
+        line_items:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/LineItemInput' }
+        terms_and_conditions: { type: string, nullable: true }
+        remarks:              { type: string, nullable: true, description: PDF-visible }
+        internal_remarks:     { type: string, nullable: true, description: PDF-hidden }
+
+    QuotationSummary:
+      type: object
+      properties:
+        id:           { type: string, format: uuid }
+        ref:          { type: string, example: QT-038 }
+        status:
+          type: string
+          enum: [draft, open, accepted, declined, expired, converted]
+        issue_date:   { type: string, format: date }
+        expires_at:   { type: string, format: date }
+        contact_name: { type: string }
+        total_minor:  { type: integer }
+        currency:     { type: string }
+
+    Quotation:
+      allOf:
+        - $ref: '#/components/schemas/QuotationSummary'
+        - type: object
+          properties:
+            delivery_days:        { type: integer, nullable: true }
+            contact:
+              type: object
+              properties:
+                id:   { type: string, format: uuid }
+                name: { type: string }
+            subtotal_minor: { type: integer }
+            tax_minor:      { type: integer }
+            line_items:
+              type: array
+              items: { $ref: '#/components/schemas/LineItem' }
+            terms_and_conditions: { type: string, nullable: true }
+            remarks:              { type: string, nullable: true }
+            internal_remarks:     { type: string, nullable: true }
+            linked_invoice:
+              nullable: true
+              type: object
+              properties:
+                id:  { type: string, format: uuid }
+                ref: { type: string }
+            share_url:  { type: string, format: uri }
+            created_at: { type: string, format: date-time }
+            updated_at: { type: string, format: date-time }
+
+    Payment:
+      type: object
+      properties:
+        id:           { type: string, format: uuid }
+        amount_minor: { type: integer }
+        currency:     { type: string }
+        method:       { type: string, example: bank-transfer }
+        recorded_at:  { type: string, format: date-time }
+        reference:    { type: string, nullable: true }
+        recorded_by:
+          type: string
+          description: Always a web-side user — payments are never recorded on mobile
+
+    UpcomingCycle:
+      type: object
+      properties:
+        issue_date:   { type: string, format: date }
+        amount_minor: { type: integer }
+        currency:     { type: string }
+
+    Recurrence:
+      type: object
+      nullable: true
+      properties:
+        enabled:    { type: boolean }
+        frequency:
+          type: string
+          enum: [weekly, monthly, quarterly, yearly]
+        anchor_day: { type: integer, minimum: 1, maximum: 31 }
+        next_at:    { type: string, format: date }
+        ends_at:    { type: string, format: date, nullable: true }
+        upcoming_cycles:
+          type: array
+          maxItems: 3
+          items: { $ref: '#/components/schemas/UpcomingCycle' }
+
+    InvoiceInput:
+      type: object
+      required: [contact_id, issue_date, due_date, currency, line_items]
+      properties:
+        contact_id:           { type: string, format: uuid }
+        issue_date:           { type: string, format: date }
+        due_date:             { type: string, format: date }
+        delivery_days:        { type: integer, nullable: true }
+        currency:             { type: string, example: MYR }
+        line_items:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/LineItemInput' }
+        terms_and_conditions: { type: string, nullable: true }
+        remarks:              { type: string, nullable: true, description: PDF-visible }
+        internal_remarks:     { type: string, nullable: true, description: PDF-hidden }
+
+    InvoiceSummary:
+      type: object
+      properties:
+        id:           { type: string, format: uuid }
+        ref:          { type: string, example: INV-00482 }
+        status:
+          type: string
+          enum: [draft, sent, partially_paid, paid, overdue]
+        issue_date:   { type: string, format: date }
+        due_date:     { type: string, format: date }
+        contact_name: { type: string }
+        total_minor:  { type: integer }
+        paid_minor:   { type: integer }
+        currency:     { type: string }
+
+    Invoice:
+      allOf:
+        - $ref: '#/components/schemas/InvoiceSummary'
+        - type: object
+          properties:
+            delivery_days: { type: integer, nullable: true }
+            contact:
+              type: object
+              properties:
+                id:   { type: string, format: uuid }
+                name: { type: string }
+            subtotal_minor: { type: integer }
+            tax_minor:      { type: integer }
+            line_items:
+              type: array
+              items: { $ref: '#/components/schemas/LineItem' }
+            payments:
+              type: array
+              description: Read-only on mobile
+              items: { $ref: '#/components/schemas/Payment' }
+            terms_and_conditions: { type: string, nullable: true }
+            remarks:              { type: string, nullable: true }
+            internal_remarks:     { type: string, nullable: true }
+            recurrence:           { $ref: '#/components/schemas/Recurrence' }
+            from_quotation:
+              nullable: true
+              type: object
+              properties:
+                id:  { type: string, format: uuid }
+                ref: { type: string }
+            share_url:  { type: string, format: uri }
+            created_at: { type: string, format: date-time }
+            updated_at: { type: string, format: date-time }
+
+    Address:
+      type: object
+      properties:
+        line1:    { type: string }
+        line2:    { type: string, nullable: true }
+        city:     { type: string }
+        state:    { type: string }
+        postcode: { type: string }
+        country:  { type: string, minLength: 2, maxLength: 2, example: MY }
+
+    ContactInput:
+      type: object
+      required: [type, name]
+      properties:
+        type:
+          type: string
+          enum: [client, supplier]
+          description: Immutable after create
+        name:    { type: string }
+        email:   { type: string, format: email, nullable: true }
+        phone:   { type: string, nullable: true }
+        tax_id:  { type: string, nullable: true }
+        address: { $ref: '#/components/schemas/Address', nullable: true }
+        notes:   { type: string, nullable: true }
+
+    Contact:
+      allOf:
+        - $ref: '#/components/schemas/ContactInput'
+        - type: object
+          properties:
+            id:                { type: string, format: uuid }
+            outstanding_minor: { type: integer, description: Sum of unpaid invoice balances }
+            invoice_count:     { type: integer }
+            quote_count:       { type: integer }
+            currency:          { type: string }
+            created_at:        { type: string, format: date-time }
+
+    Dashboard:
+      type: object
+      properties:
+        youre_owed:
+          type: object
+          properties:
+            amount_minor:    { type: integer }
+            currency:        { type: string }
+            unpaid_count:    { type: integer }
+            due_this_week:   { type: integer }
+        open_quotes:
+          type: object
+          properties:
+            count:           { type: integer }
+            pipeline_minor:  { type: integer }
+            currency:        { type: string }
+        overdue:
+          type: object
+          properties:
+            count:           { type: integer }
+            amount_minor:    { type: integer }
+            currency:        { type: string }
+        collected_30d:
+          type: object
+          properties:
+            total_minor:     { type: integer }
+            currency:        { type: string }
+            series:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:         { type: string, format: date }
+                  amount_minor: { type: integer }
+        recent_activity:
+          type: array
+          items:
+            type: object
+            properties:
+              id:          { type: string, format: uuid }
+              kind:        { type: string, enum: [quotation, invoice] }
+              status:      { type: string }
+              ref:         { type: string }
+              contact:     { type: string }
+              amount_minor: { type: integer }
+              currency:    { type: string }
+              occurred_at: { type: string, format: date-time }

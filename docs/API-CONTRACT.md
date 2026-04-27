@@ -2,6 +2,8 @@
 
 What the Laravel backend (`oneorzerotechnologies/Laravel12-scount`) needs to expose for the mobile app to function. The mobile dev should not start coding until the **Phase-1 must-have** endpoints below are stubbed and reachable on staging.
 
+> **Machine-readable companion:** [`openapi.yaml`](openapi.yaml) — OpenAPI 3.0.3 spec generated from this document. Use it for code-gen, Postman import, Scribe stub generation, or `redocly preview-docs docs/openapi.yaml` to render an interactive viewer. This markdown remains the canonical source; the YAML is regenerated to match.
+
 ## Conventions
 
 - **Base URL:** `https://api.scount.my` (or `https://scount.my/api` if a separate api subdomain is too much for v1)

@@ -22,6 +22,7 @@ Mobile is for **on-the-go capture and oversight**, not heavy data entry. The web
 | [`docs/TECH-DECISIONS.md`](docs/TECH-DECISIONS.md) | Stack choices (React Native + Expo) and why |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phased delivery plan, milestones, target dates |
 | [`docs/API-CONTRACT.md`](docs/API-CONTRACT.md) | What the Laravel backend needs to expose |
+| [`docs/openapi.yaml`](docs/openapi.yaml) | OpenAPI 3.0.3 machine-readable companion to API-CONTRACT.md |
 | [`docs/UI-DESIGN.md`](docs/UI-DESIGN.md) | Screen-by-screen UI spec — flow, layout, copy, states, interactions |
 | [`docs/STORE-RELEASE.md`](docs/STORE-RELEASE.md) | Apple App Store + Google Play submission checklist |
 
