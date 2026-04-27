@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Empty &amp; error states — scount.my Mobile</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=jetbrains-mono:400,500,600&display=swap" rel="stylesheet" />
+    <script>(function(){try{if(localStorage.getItem('scount-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: {
+            fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'], mono: ['JetBrains Mono','ui-monospace','monospace'] },
+            colors: { ink: { 900:'#04110A', 800:'#061A0F', 700:'#082316', 600:'#0C2E1D' }, moss: { 50:'#ECFDF5',100:'#D1FAE5',200:'#A7F3D0',300:'#6EE7B7',400:'#34D399',500:'#10B981',600:'#059669',700:'#047857',800:'#065F46',900:'#064E3B' } },
+            boxShadow: { 'glow-sm':'0 0 24px -6px rgba(16,185,129,0.4)' },
+        } } };
+    </script>
+    <style>
+        body { background-color: #F1F5F4; color: #0F172A; font-feature-settings: 'cv11','ss01','ss03'; transition: background-color .25s ease, color .25s ease; }
+        html.dark body { background-color: #020A06; color: #E8FFF3; }
+        .gradient-text { background: linear-gradient(135deg, #059669 0%, #10B981 40%, #047857 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        html.dark .gradient-text { background: linear-gradient(135deg, #6EE7B7 0%, #34D399 40%, #10B981 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .phone { width: 320px; aspect-ratio: 9 / 19.5; border-radius: 2.7rem; background: linear-gradient(180deg, #1f2937, #0f172a); padding: 4px; box-shadow: 0 30px 60px -15px rgba(15,23,42,0.35), 0 0 0 1px rgba(110,231,183,0.15), 0 12px 28px -8px rgba(15,23,42,0.18); position: relative; }
+        .phone-screen { position: relative; width: 100%; height: 100%; border-radius: 2.5rem; background: #FFFFFF; overflow: hidden; }
+        html.dark .phone-screen { background: #04110A; }
+        .island { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 90px; height: 26px; background: #04110A; border-radius: 999px; z-index: 30; }
+        .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font-size: 12px; font-weight: 600; color: #0F172A; z-index: 20; }
+        html.dark .statusbar { color: #E8FFF3; }
+        .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 110px; height: 4px; background: #94a3b8; border-radius: 999px; opacity: 0.85; z-index: 20; }
+        html.dark .home-bar { background: #475569; }
+        .screen-body { position: absolute; inset: 0; padding: 44px 16px 30px; overflow: hidden; display: flex; flex-direction: column; }
+        .phone-label { text-align: center; margin-top: 1.25rem; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; }
+        .phone-label .step { color: #059669; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+        html.dark .phone-label .step { color: #34D399; }
+        .phone-label .name { display: block; margin-top: 4px; font-size: 14px; letter-spacing: -0.01em; text-transform: none; font-weight: 700; }
+        .phone-label .desc { display: block; margin-top: 4px; font-size: 11px; font-weight: 400; color: #64748b; max-width: 280px; margin-left: auto; margin-right: auto; line-height: 1.4; letter-spacing: 0; text-transform: none; }
+        html.dark .phone-label .desc { color: rgba(232,255,243,0.55); }
+        .brand-pill { display: inline-grid; place-items: center; background: linear-gradient(135deg, #6EE7B7, #34D399 40%, #059669); box-shadow: inset 0 0 0 1px rgba(110,231,183,0.55), 0 6px 18px -6px rgba(16,185,129,0.55); border-radius: 14px; }
+        .theme-icon-sun { display: none; } .theme-icon-moon { display: inline; }
+        html.dark .theme-icon-sun { display: inline; } html.dark .theme-icon-moon { display: none; }
+        @keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }
+        .skeleton { background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%); background-size: 200px 100%; animation: shimmer 1.4s linear infinite; border-radius: 6px; }
+        html.dark .skeleton { background: linear-gradient(90deg, #082316 0%, #0C2E1D 50%, #082316 100%); background-size: 200px 100%; }
+        .scrim { position: absolute; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(2px); z-index: 25; }
+        html.dark .scrim { background: rgba(0,0,0,0.6); }
+    </style>
+</head>
+<body class="antialiased">
+
+<header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-ink-900/70 border-b border-slate-200 dark:border-moss-900/40">
+    <div class="mx-auto max-w-7xl px-6 h-14 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <a href="preview.html" class="text-slate-500 hover:text-moss-700 dark:hover:text-moss-300 text-sm">←</a>
+            <span class="brand-pill w-8 h-8">
+                <svg class="w-4 h-4 text-ink-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 6.5C16 5 13.8 4.2 11.6 4.5 8.6 5 7 7 7 9c0 4.5 9.5 2.5 9.5 7 0 2-1.6 4-4.6 4.5-2.2.3-4.4-.5-5.9-2"/><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/></svg>
+            </span>
+            <div>
+                <div class="text-[15px] font-bold tracking-tight leading-none">scount<span class="text-moss-600 dark:text-moss-400">.my</span></div>
+                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 mt-0.5">Empty &amp; error states</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="hidden sm:inline-flex text-[11px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 px-2 py-1 rounded-full border border-slate-200 dark:border-moss-900/40">Screen 09</span>
+            <button type="button" id="theme-toggle" aria-label="Toggle theme" class="grid place-items-center w-9 h-9 rounded-lg border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-900 hover:bg-moss-50 dark:hover:bg-moss-900/40 text-slate-700 dark:text-moss-100/80 transition">
+                <svg class="theme-icon-moon w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="theme-icon-sun w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.93 19.07 1.41-1.41"/><path d="m17.66 6.34 1.41-1.41"/></svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<section class="mx-auto max-w-5xl px-6 pt-12 pb-6 text-center">
+    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Empty &amp; <span class="gradient-text">error states.</span></h1>
+    <p class="mt-3 text-sm sm:text-base text-slate-600 dark:text-moss-100/70 max-w-2xl mx-auto leading-relaxed">The unhappy paths matter as much as the happy ones. Every list has a "no data" treatment; every screen handles offline, server error, and the forced-update wall. Designed once here, reused everywhere.</p>
+</section>
+
+<section class="mx-auto max-w-[1600px] px-6 py-10">
+    <div class="flex flex-wrap justify-center items-start gap-x-10 gap-y-14">
+
+        <!-- 09A · EMPTY LIST -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body !pb-[68px]">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between">
+                            <div class="text-[18px] font-bold tracking-tight text-slate-900 dark:text-moss-100">Quotations</div>
+                            <button class="w-8 h-8 rounded-full bg-moss-500 grid place-items-center text-white shadow-glow-sm">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Filter pills (all zero) -->
+                        <div class="mt-3 flex gap-1.5 overflow-hidden">
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-moss-500 text-white">All</span>
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 dark:bg-ink-800/50 text-slate-400 dark:text-moss-300/55">Open</span>
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 dark:bg-ink-800/50 text-slate-400 dark:text-moss-300/55">Accepted</span>
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 dark:bg-ink-800/50 text-slate-400 dark:text-moss-300/55">Expired</span>
+                        </div>
+
+                        <!-- Center empty illustration -->
+                        <div class="flex-1 flex flex-col items-center justify-center text-center px-4">
+                            <div class="w-20 h-20 rounded-2xl bg-moss-50 dark:bg-moss-900/30 grid place-items-center text-moss-600 dark:text-moss-300">
+                                <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                            </div>
+                            <div class="mt-3 text-[14px] font-bold text-slate-900 dark:text-moss-100">No quotes yet</div>
+                            <div class="mt-1 text-[11px] text-slate-600 dark:text-moss-100/70 leading-relaxed max-w-[240px]">Send your first quote in under a minute. Customers accept it on the link, you turn it into an invoice in one tap.</div>
+                            <button class="mt-4 rounded-xl bg-moss-500 hover:bg-moss-600 text-white text-[12px] font-bold py-2.5 px-4 flex items-center gap-1.5 shadow-glow-sm">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                                New quote
+                            </button>
+                            <button class="mt-2 text-[10px] font-medium text-moss-700 dark:text-moss-300">Or import from web →</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab bar (Quotation active) -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+                                <span class="text-[9px]">Home</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
+                                <span class="text-[9px] font-semibold">Quotation</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg>
+                                <span class="text-[9px]">Invoice</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span class="text-[9px]">Contacts</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                                <span class="text-[9px]">More</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">09A · Empty list</span>
+                <span class="name">Onboarding nudge</span>
+                <span class="desc">Same pattern across Quotations, Invoices, Contacts, Notifications. Icon · headline · one-line value prop · primary CTA · "or import from web" escape hatch for users who already have data.</span>
+            </div>
+        </div>
+
+        <!-- 09B · OFFLINE BANNER -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3 text-amber-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5z" opacity="0.5"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body !pb-[68px]">
+                        <!-- Offline banner -->
+                        <div class="rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700/40 px-3 py-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-600 dark:text-amber-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.86a10 10 0 0 1 14 0"/><path d="M8.5 16.43a5 5 0 0 1 7 0"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                            <div class="flex-1">
+                                <div class="text-[11px] font-semibold text-amber-800 dark:text-amber-200">You're offline</div>
+                                <div class="text-[9px] text-amber-700 dark:text-amber-300/85">Showing cached data · pull to retry</div>
+                            </div>
+                        </div>
+
+                        <!-- Header row (muted) -->
+                        <div class="mt-3 flex items-center justify-between opacity-90">
+                            <button class="flex items-center gap-1.5 px-2 py-1 rounded-lg">
+                                <div class="w-6 h-6 rounded-md bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[10px] font-bold">A</div>
+                                <span class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">Acme Sdn Bhd</span>
+                            </button>
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[11px] font-bold">E</div>
+                        </div>
+
+                        <!-- Greeting -->
+                        <div class="mt-3">
+                            <div class="text-[11px] text-slate-500 dark:text-moss-300/70 uppercase tracking-wider font-semibold">Last sync · 2h ago</div>
+                            <div class="text-[20px] font-bold tracking-tight text-slate-900 dark:text-moss-100">Eva</div>
+                        </div>
+
+                        <!-- Hero (cached) -->
+                        <div class="mt-3 rounded-2xl bg-gradient-to-br from-moss-500/80 to-moss-700/80 p-3.5 text-white relative">
+                            <div class="absolute top-2 right-2 text-[7px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-white/20 text-white font-bold">Cached</div>
+                            <div class="text-[10px] uppercase tracking-wider text-white/80 font-semibold">You're owed</div>
+                            <div class="mt-0.5 text-[24px] font-bold tracking-tight">RM 47,800</div>
+                            <div class="mt-0.5 text-[10px] text-white/85">8 unpaid invoices · 3 due this week</div>
+                        </div>
+
+                        <!-- 2-up muted -->
+                        <div class="mt-2 grid grid-cols-2 gap-2 opacity-80">
+                            <div class="rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-2.5">
+                                <div class="text-[9px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70">Open quotes</div>
+                                <div class="mt-0.5 text-[14px] font-bold text-slate-900 dark:text-moss-100">12</div>
+                            </div>
+                            <div class="rounded-xl border border-amber-200 dark:border-amber-700/40 bg-amber-50/60 dark:bg-amber-900/20 p-2.5">
+                                <div class="text-[9px] uppercase tracking-wider text-amber-700 dark:text-amber-300">Overdue</div>
+                                <div class="mt-0.5 text-[14px] font-bold text-slate-900 dark:text-moss-100">3</div>
+                            </div>
+                        </div>
+
+                        <!-- Disabled new-quote / new-invoice -->
+                        <div class="mt-2 grid grid-cols-2 gap-2">
+                            <button disabled class="rounded-xl bg-slate-100 dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 py-2.5 flex items-center justify-center gap-1.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                                <span class="text-[11px] font-semibold">New quote</span>
+                            </button>
+                            <button disabled class="rounded-xl bg-slate-100 dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 py-2.5 flex items-center justify-center gap-1.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/></svg>
+                                <span class="text-[11px] font-semibold">New invoice</span>
+                            </button>
+                        </div>
+                        <div class="mt-1 text-center text-[9px] text-slate-500 dark:text-moss-300/70 italic">Creating new records needs a connection.</div>
+                    </div>
+
+                    <!-- Tab bar (Home active, slightly muted) -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+                                <span class="text-[9px] font-semibold">Home</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span class="text-[9px]">Quotation</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg><span class="text-[9px]">Invoice</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="text-[9px]">Contacts</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg><span class="text-[9px]">More</span></button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">09B · Offline</span>
+                <span class="name">Cached &amp; honest</span>
+                <span class="desc">Amber banner up top + a "Cached" pill on stale data + disabled write CTAs. Reads stay available; mutations queue and flush on reconnect (Phase 2 — for v1 they're simply blocked).</span>
+            </div>
+        </div>
+
+        <!-- 09C · FORCED UPDATE -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body">
+                        <!-- Background art -->
+                        <div class="absolute inset-0 pointer-events-none" style="background:
+                            radial-gradient(280px 200px at 75% 0%, rgba(16,185,129,0.18), transparent 60%),
+                            radial-gradient(260px 180px at 0% 100%, rgba(110,231,183,0.20), transparent 60%);"></div>
+
+                        <div class="flex-1"></div>
+
+                        <div class="relative text-center">
+                            <div class="brand-pill w-16 h-16 mx-auto">
+                                <svg class="w-8 h-8 text-ink-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+                            </div>
+                            <div class="mt-5 text-[20px] font-bold tracking-tight text-slate-900 dark:text-moss-100">Update required</div>
+                            <div class="mt-2 text-[12px] text-slate-600 dark:text-moss-100/70 leading-relaxed px-6">We've shipped important fixes since you last opened the app. Get the new version to keep using scount.</div>
+                            <div class="mt-3 inline-flex items-center gap-1 text-[10px] font-mono text-slate-500 dark:text-moss-300/70">
+                                <span>v1.0.0</span><span>→</span><span class="text-moss-700 dark:text-moss-300 font-semibold">v1.2.0</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1"></div>
+
+                        <div class="relative px-2 pb-2 space-y-2">
+                            <button class="w-full rounded-2xl bg-moss-500 hover:bg-moss-600 text-white text-[14px] font-bold py-3 flex items-center justify-center gap-1.5 shadow-glow-sm">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m8 6 4-4 4 4"/><path d="M21 13v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7"/></svg>
+                                Update on App Store
+                            </button>
+                            <div class="text-center text-[10px] text-slate-500 dark:text-moss-300/70">Need help? <span class="text-moss-700 dark:text-moss-300 font-semibold">support@scount.my</span></div>
+                        </div>
+                    </div>
+
+                    <!-- No tab bar — full-screen blocker -->
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">09C · Forced update</span>
+                <span class="name">Hard blocker</span>
+                <span class="desc">No tab bar, no skip. Triggered when version-check returns force_update — usually security or breaking-API fixes. CTA deep-links to App Store / Play Store; "support" email is the only escape.</span>
+            </div>
+        </div>
+
+        <!-- 09D · GENERIC ERROR -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body !pb-[68px]">
+                        <!-- Header (still rendered) -->
+                        <div class="flex items-center justify-between">
+                            <button class="flex items-center gap-1.5 px-2 py-1 rounded-lg">
+                                <div class="w-6 h-6 rounded-md bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[10px] font-bold">A</div>
+                                <span class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">Acme Sdn Bhd</span>
+                                <svg class="w-3 h-3 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[11px] font-bold">E</div>
+                        </div>
+
+                        <!-- Center error illustration -->
+                        <div class="flex-1 flex flex-col items-center justify-center text-center px-4">
+                            <div class="w-20 h-20 rounded-2xl bg-red-50 dark:bg-red-900/20 grid place-items-center text-red-600 dark:text-red-300">
+                                <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            </div>
+                            <div class="mt-3 text-[14px] font-bold text-slate-900 dark:text-moss-100">Something went wrong</div>
+                            <div class="mt-1 text-[11px] text-slate-600 dark:text-moss-100/70 leading-relaxed max-w-[240px]">We couldn't load your dashboard. The team has been pinged via Sentry — try again in a moment.</div>
+                            <div class="mt-2 text-[9px] font-mono text-slate-400 dark:text-moss-300/55">trace · b9c4e2f</div>
+                            <button class="mt-4 rounded-xl bg-moss-500 hover:bg-moss-600 text-white text-[12px] font-bold py-2.5 px-4 flex items-center gap-1.5 shadow-glow-sm">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+                                Try again
+                            </button>
+                            <button class="mt-2 text-[10px] font-medium text-slate-500 dark:text-moss-300/70">View status page →</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab bar -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span class="text-[9px] font-semibold">Home</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span class="text-[9px]">Quotation</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg><span class="text-[9px]">Invoice</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="text-[9px]">Contacts</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg><span class="text-[9px]">More</span></button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">09D · Generic error</span>
+                <span class="name">5xx fallback</span>
+                <span class="desc">Header chrome stays — never trap the user. Trace ID printed for support tickets, "Try again" retries the failed query, "View status" opens scount.my/status in an in-app browser.</span>
+            </div>
+        </div>
+
+        <!-- 09E · LOADING SKELETON -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body !pb-[68px]">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between">
+                            <div class="text-[18px] font-bold tracking-tight text-slate-900 dark:text-moss-100">Quotations</div>
+                            <button class="w-8 h-8 rounded-full bg-moss-500 grid place-items-center text-white shadow-glow-sm">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Filter pills (skeleton) -->
+                        <div class="mt-3 flex gap-1.5 overflow-hidden">
+                            <div class="skeleton h-6 w-12"></div>
+                            <div class="skeleton h-6 w-16"></div>
+                            <div class="skeleton h-6 w-20"></div>
+                            <div class="skeleton h-6 w-16"></div>
+                        </div>
+
+                        <!-- Search skeleton -->
+                        <div class="mt-3 skeleton h-9 w-full rounded-xl"></div>
+
+                        <!-- List skeleton rows -->
+                        <div class="mt-3 space-y-1.5">
+                            <div class="rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="skeleton h-3 w-12"></div>
+                                        <div class="skeleton h-3 w-14"></div>
+                                    </div>
+                                    <div class="skeleton h-4 w-16"></div>
+                                </div>
+                                <div class="mt-2 skeleton h-3 w-32"></div>
+                                <div class="mt-1 skeleton h-2.5 w-40"></div>
+                            </div>
+                            <div class="rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="skeleton h-3 w-12"></div>
+                                        <div class="skeleton h-3 w-14"></div>
+                                    </div>
+                                    <div class="skeleton h-4 w-20"></div>
+                                </div>
+                                <div class="mt-2 skeleton h-3 w-28"></div>
+                                <div class="mt-1 skeleton h-2.5 w-36"></div>
+                            </div>
+                            <div class="rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="skeleton h-3 w-12"></div>
+                                        <div class="skeleton h-3 w-14"></div>
+                                    </div>
+                                    <div class="skeleton h-4 w-14"></div>
+                                </div>
+                                <div class="mt-2 skeleton h-3 w-32"></div>
+                                <div class="mt-1 skeleton h-2.5 w-40"></div>
+                            </div>
+                            <div class="rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="skeleton h-3 w-12"></div>
+                                        <div class="skeleton h-3 w-14"></div>
+                                    </div>
+                                    <div class="skeleton h-4 w-16"></div>
+                                </div>
+                                <div class="mt-2 skeleton h-3 w-32"></div>
+                                <div class="mt-1 skeleton h-2.5 w-36"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab bar (Quotation active) -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span class="text-[9px]">Home</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg><span class="text-[9px] font-semibold">Quotation</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg><span class="text-[9px]">Invoice</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="text-[9px]">Contacts</span></button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg><span class="text-[9px]">More</span></button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">09E · Loading</span>
+                <span class="name">Skeletons, not spinners</span>
+                <span class="desc">Same shape as the populated list. Sub-second flash on warm cache, ~700ms on cold start. Spinners feel slower than skeletons even when they take the same time.</span>
+            </div>
+        </div>
+
+        <!-- 09F · CONFLICT BOTTOM SHEET -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <!-- Background quote detail (dimmed) -->
+                    <div class="screen-body !pb-[68px] opacity-60">
+                        <div class="flex items-center justify-between">
+                            <button class="w-8 h-8 rounded-full grid place-items-center text-slate-700 dark:text-moss-100/80">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                            </button>
+                            <div class="text-[14px] font-mono font-semibold text-slate-700 dark:text-moss-100/80">QT-031</div>
+                            <div class="flex items-center gap-0.5">
+                                <button class="w-8 h-8 rounded-full grid place-items-center text-moss-700 dark:text-moss-300"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                                <button class="w-8 h-8 rounded-full grid place-items-center text-slate-700 dark:text-moss-100/80"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex justify-center">
+                            <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-moss-100 text-moss-700 font-bold">Converted</span>
+                        </div>
+                        <div class="mt-3 rounded-xl bg-white dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 p-3 flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-300 to-amber-500"></div>
+                            <div class="flex-1">
+                                <div class="text-[12px] font-semibold">Borneo Coffee Co.</div>
+                                <div class="text-[10px] text-slate-500">finance@borneo.example</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 rounded-xl bg-gradient-to-br from-moss-500 to-moss-700 text-white p-3.5">
+                            <div class="text-[10px] uppercase text-white/80">Total</div>
+                            <div class="mt-0.5 text-[24px] font-bold">RM 5,200.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Scrim -->
+                    <div class="scrim"></div>
+
+                    <!-- Bottom sheet -->
+                    <div class="absolute left-0 right-0 bottom-0 z-30 rounded-t-3xl bg-white dark:bg-ink-900 border-t border-slate-200 dark:border-moss-900/40 px-4 pt-3 pb-6">
+                        <div class="w-10 h-1 rounded-full bg-slate-300 dark:bg-moss-900/60 mx-auto"></div>
+                        <div class="mt-3 flex items-start gap-2.5">
+                            <div class="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/40 grid place-items-center text-amber-700 dark:text-amber-300 shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-[14px] font-bold text-slate-900 dark:text-moss-100">Can't delete this quote</div>
+                                <div class="mt-1 text-[11px] text-slate-600 dark:text-moss-100/70 leading-relaxed">QT-031 was converted to <span class="font-mono text-moss-700 dark:text-moss-300">INV-00510</span>. Delete the invoice first, then the quote can be removed.</div>
+                                <div class="mt-2 text-[9px] font-mono text-slate-400 dark:text-moss-300/55">409 · linked_invoice exists</div>
+                            </div>
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-2">
+                            <button class="rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 text-slate-700 dark:text-moss-100/80 text-[12px] font-semibold py-2.5">Cancel</button>
+                            <button class="rounded-xl bg-moss-500 hover:bg-moss-600 text-white text-[12px] font-bold py-2.5 flex items-center justify-center gap-1.5 shadow-glow-sm">
+                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                View invoice
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">09F · 409 Conflict</span>
+                <span class="name">Lifecycle guard hit</span>
+                <span class="desc">Bottom sheet, not a toast — the user needs the explanation. Body text reads the API's `message` field; the dim trace line carries the HTTP code + reason for support tickets. CTA routes to wherever the unblock action lives.</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="mx-auto max-w-3xl px-6 pb-20 pt-8">
+    <div class="rounded-2xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-6 text-sm text-slate-700 dark:text-moss-100/80 leading-relaxed">
+        <div class="text-[10px] font-mono uppercase tracking-widest text-moss-700 dark:text-moss-300 font-semibold">Notes</div>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">One empty-state component, six surfaces.</strong> The icon-on-tinted-square + headline + body + primary CTA + escape hatch pattern in 09A is exactly the same shape we use on empty Invoices, empty Contacts (per segment), empty Notifications ("All caught up" with a moss check), and empty filtered lists. The team builds <code class="font-mono text-moss-700 dark:text-moss-300">&lt;EmptyState /&gt;</code> once and parameterises icon + copy + CTA.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Offline policy on v1.</strong> Reads stay available from the TanStack Query cache; mutations are blocked at the UI level (disabled CTAs + a one-line caption). A proper offline-mutation queue with conflict resolution is Phase 2 — for now, the user knows what's cached and that they can't write.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Forced update is the only screen without a tab bar.</strong> Everything else keeps it for orientation. The forced-update screen is reached when <code class="font-mono text-moss-700 dark:text-moss-300">GET /v1/version-check</code> returns <code class="font-mono">force_update</code>; we never let the user navigate past it. The "support@scount.my" line is the escape hatch for users on a platform where the store is unavailable (jailbroken, sideloaded, etc.).</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Errors carry a trace ID.</strong> Sentry's event ID surfaces inline as a dim mono line (<code class="font-mono">trace · b9c4e2f</code>). Users can quote it in support tickets; we look it up and have the full trace + breadcrumb trail without asking the user a single follow-up question.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">409s use the bottom sheet pattern.</strong> Not a toast (too short), not an alert (too modal). The sheet quotes the API's <code class="font-mono">message</code> verbatim and routes the user to wherever they can resolve it. Same component for "can't delete a converted quote", "can't edit an accepted quote", "can't delete a paid invoice".</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Skeleton, not spinner.</strong> Skeletons preview the shape of the result, so the perceived latency drops even at the same wall-clock time. Use them everywhere the result has a known shape (lists, detail pages, dashboard cards). Spinners are reserved for "I genuinely don't know how long this'll take" — basically just biometric prompts and PDF generation.</p>
+    </div>
+</section>
+
+<script>
+    const t = document.getElementById('theme-toggle');
+    if (t) t.addEventListener('click', () => { const r = document.documentElement; const d = r.classList.toggle('dark'); try { localStorage.setItem('scount-theme', d ? 'dark' : 'light'); } catch(e){} });
+</script>
+
+</body>
+</html>

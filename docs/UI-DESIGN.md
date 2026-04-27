@@ -455,6 +455,100 @@ Each category is individually mutable from the **Notifications** sub-screen reac
 
 Five toggles, one per category above. Toggling Off mutes both push and the in-app inbox row. A small "Quiet hours" sub-section at the bottom (Phase 2) will let the user silence everything between e.g. 10pm–7am.
 
+## Screen 09 — Empty & error states
+
+The unhappy paths matter as much as the happy ones. Designed once here, reused everywhere. See [`mockups/states.html`](../mockups/states.html) for visuals.
+
+### 09A — Empty list
+
+**When:** the user has zero records of this type (or zero matching the active filter). Applies to Quotations, Invoices, Contacts (per segment), Notifications, and search results.
+
+**Layout**
+- Standard list chrome (header, filter pills if any, search) — kept visible so the user knows what they're looking at.
+- Centred block: a `64×64` rounded-square icon on `moss-50 / moss-900/30` background + headline + body + primary CTA + a smaller secondary "Or import from web →" link.
+- Built as a single reusable `<EmptyState />` component parameterised on `icon`, `headline`, `body`, `cta`, `onCta`, optional `secondary`.
+
+**Copy variants**
+| Surface | Headline | Body |
+|---|---|---|
+| Quotations | No quotes yet | Send your first quote in under a minute. Customers accept it on the link, you turn it into an invoice in one tap. |
+| Invoices | No invoices yet | Issue your first invoice from a quote, or start one from scratch. |
+| Contacts (Clients) | No clients yet | Add a client to start invoicing. |
+| Contacts (Suppliers) | No suppliers yet | Track who you owe and what you've spent (Phase 2 features unlock as you add). |
+| Notifications | All caught up | We'll page you when a customer accepts a quote, pays an invoice, or anything else worth knowing. |
+| Search | No matches | Try a different ref, name, or amount. |
+
+### 09B — Offline
+
+**When:** the device has no connectivity. Detected via `@react-native-community/netinfo`.
+
+**Layout**
+- Amber banner at the top of the screen: warning icon + "You're offline" + "Showing cached data · pull to retry".
+- Existing screen content renders from the TanStack Query cache, with a subtle "Cached" pill on the dashboard hero card.
+- Mutation CTAs ("New quote", "New invoice", "Save", etc.) render disabled with a small caption: "Creating new records needs a connection."
+- Pull-to-refresh is wired to retry connectivity; the banner clears automatically when back online.
+
+**v1 policy:** offline reads only. A proper offline-mutation queue with conflict resolution is Phase 2.
+
+### 09C — Forced update
+
+**When:** `GET /v1/version-check` returns `force_update`. The app intercepts every navigation and replaces the entire screen.
+
+**Layout**
+- No tab bar, no back button, no escape paths within the app.
+- Brand mark (medium) + "Update required" + body copy + a `v1.0.0 → v1.2.0` mono pill so users know what they're missing.
+- Single primary CTA: "Update on App Store" / "Update on Google Play" (platform-aware).
+- Bottom support line: "Need help? support@scount.my" — for users on jailbroken / sideloaded installs where the store deep-link won't resolve.
+
+The non-forcing variant ("update_available") is a dismissable toast on the dashboard, not this full-screen treatment.
+
+### 09D — Generic error (5xx fallback)
+
+**When:** an unexpected error throws on a query (5xx, network, parse error). Sentry catches it, the user sees this.
+
+**Layout**
+- Header chrome stays — never trap the user on a tab.
+- Centred `64×64` red-tinted icon (red-50 / red-900/20) + "Something went wrong" + a one-line apology mentioning Sentry.
+- Below the body: a dim mono `trace · <8-char ID>` line carrying Sentry's event ID for support tickets.
+- Primary CTA: "Try again" — re-invokes the failed query.
+- Secondary link: "View status page →" — opens `scount.my/status` in an in-app browser.
+
+422 (validation) and 401 (token expired) do **not** use this screen — they're handled inline on the form / auto-routed to login respectively.
+
+### 09E — Loading skeletons
+
+**When:** any list, detail, or dashboard query is in `pending` state.
+
+**Layout**
+- Same shape as the populated UI — skeleton rows match the height/structure of real list items, skeleton cards match the dashboard hero, etc.
+- Animated via a 1.4s shimmer (`linear-gradient` background-position transform).
+- Sub-second flash on warm cache (TanStack Query placeholder); ~700ms on cold-start.
+
+**Skeleton, not spinner.** Spinners are reserved for "I genuinely don't know how long this'll take" — biometric prompts and PDF generation. Everything with a known shape gets a skeleton.
+
+### 09F — 409 Conflict (lifecycle guard hit)
+
+**When:** the server rejects a mutation with `409` because of a lifecycle guard. Examples:
+- Trying to edit an accepted or converted quote
+- Trying to delete a quote that has been converted to an invoice
+- Trying to delete an invoice that has any payment recorded on web
+- Trying to edit an invoice with payments
+
+**Layout**
+- Bottom sheet (not a toast — the user needs the explanation; not a dialog — too modal).
+- Drag handle + amber-tinted icon + bold headline + body that quotes the API's `message` verbatim.
+- Dim mono line: `<HTTP code> · <reason>` (e.g. `409 · linked_invoice exists`) for support context.
+- Two-button row: **Cancel** (closes sheet) + **Resolve action** (deep-links to wherever the unblock lives — e.g. "View invoice" for the linked-invoice case, "Void payment" for the paid-invoice case if/when that exists on mobile).
+
+Same component handles every 409 flavour; only the icon, copy, and CTA target change.
+
+### Other surfaces (briefly)
+
+- **Session expired (401)** — token interceptor clears `auth_store` and routes the user to `/(auth)/login`. The login screen (Screen 02) carries a one-line "Session expired — sign in again" caption when reached this way.
+- **Permission denied (403)** — same component as 09D with red icon + "You don't have permission" + a "Switch workspace" secondary action.
+- **Not found (404)** — only reachable via deep-link to a deleted record. Same component as 09D with a slate icon + "We couldn't find that" + back button.
+- **Validation error (422)** — never a screen-level state. Field-level red rings + inline error messages on the form. The `errors` map from the response drives them.
+
 ## Animations & micro-interactions
 
 | Where | Effect | Duration |
