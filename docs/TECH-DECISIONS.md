@@ -100,6 +100,20 @@ export const ink = {
 
 Light/dark themes mirror the web — light by default, dark toggle persists per user.
 
+### Android — Material 3 dynamic colour
+
+On Android 12+, the app **opts in to Material You dynamic colour**: the system extracts a tonal palette from the user's wallpaper and we feed it into surfaces, dividers, and secondary accents. The brand `moss-500` is reserved for elements that must stay scount.my-coloured regardless of OS theming:
+
+- Brand mark (logo gradient)
+- Primary CTAs (Sign in, Create invoice, etc.)
+- Hero "Cash on hand" gradient card
+- Status pulses (online, sync, success)
+- Active tab indicator on the bottom tab bar
+
+Implementation: install `react-native-material-you-colors` (or use Expo's built-in `expo-system-ui` for status bar, plus a thin theme provider that merges M3 tokens into our `theme/colors.ts`). On Android < 12 and on iOS, the dynamic-colour branch is bypassed and the brand palette is used end-to-end.
+
+**Why not full M3 everywhere?** Because users opening a finance app expect to recognise it. The brand mark and primary actions stay scount.my green; the chrome adapts. Best of both.
+
 ## Authentication
 
 - **Login:** email + password POST to `/api/v1/auth/login` → returns Sanctum token.
