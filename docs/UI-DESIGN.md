@@ -203,8 +203,8 @@ For users who belong to multiple workspaces (multi-business owners, accountants 
 ### States
 | State | What user sees |
 |---|---|
-| Loading (cold start) | Skeleton placeholders for hero card + KPIs + activity rows |
-| Empty (brand new workspace) | Hero shows `RM 0`, KPIs zeroed, recent activity replaced by an onboarding card: "Create your first invoice" |
+| Loading (cold start) | Skeleton placeholders for hero + 2-up + chart + activity rows |
+| Empty (brand new workspace) | Hero shows `RM 0` with sub "No invoices yet"; 2-up zeroed; recent activity replaced by an onboarding card: "Create your first quote" |
 | Stale (offline + last cache) | Soft banner top of scroll: "Last updated 2h ago" with refresh action |
 | Pull to refresh | Native iOS / Android refresh control re-fetches `/v1/dashboard` |
 | Loaded with data | As shown in mockup |
@@ -212,22 +212,192 @@ For users who belong to multiple workspaces (multi-business owners, accountants 
 
 ### Copy
 - Greeting: **Good morning · afternoon · evening, {firstName}**
-- Hero label: **Cash on hand**
-- KPI labels: **Revenue MTD** · **Outstanding** · _(tertiary on next scroll: **Bills due**)_
-- Cash flow card: **Cash flow · 30d**
-- Quick actions: **Invoice** · **Expense** · **Customer**
+- Hero label: **You're owed**
+- 2-up labels: **Open quotes** (count + pipeline value) · **Overdue** (count + amount, "chase up")
+- Chart label: **Collected · 30d** with total at top right
+- Quick actions: **New quote** · **New invoice**
 - Section heading: **Recent**
-- Transaction format: `INV-482 · PT Anugerah · +RM 12.4k`
+- Activity row format: `[STATUS pill] QT-038 · CityWorks · RM 8.7k`
 
 ### Interactions
 - Tap workspace chip → bottom sheet listing other workspaces (no full screen jump)
 - Tap bell → push to "Notifications" full-screen list
 - Tap avatar → switch to More tab
-- Tap hero card → push to "Cash" detail (Phase 2 — currently no-op)
-- Tap any KPI card → filtered list ("Revenue MTD" → invoices filtered to this month)
-- Tap a quick action → modal stack with the relevant create form
-- Tap "See all" → push to Invoices tab
-- Pull to refresh → re-fetch dashboard
+- Tap "You're owed" hero → push to Invoice list filtered to `status=overdue,sent`
+- Tap "Open quotes" card → push to Quotation list filtered to `status=open`
+- Tap "Overdue" card → push to Invoice list filtered to `status=overdue`
+- Tap **New quote** → modal stack with the quote create form
+- Tap **New invoice** → modal stack with the invoice create form
+- Tap an activity row → push to that document's detail screen
+- Tap "See all" → push to Quotation or Invoice tab depending on the most recent activity kind
+- Pull to refresh → re-fetch `/v1/dashboard`
+
+## Screen 05 — Quotation workflow
+
+The full quote-to-cash arc lives in three screens reachable from the **Quotation** tab.
+
+### 05A — Quotation list
+
+**Purpose:** scan all quotes by status. Default filter is `Open` (the action-needed bucket).
+
+**Layout**
+- Sticky header: title "Quotations" + "+ New" CTA top-right (icon-only, primary moss)
+- Sticky segmented filter pills: **All · Open · Accepted · Declined · Expired** (horizontal scroll on small phones)
+- Search input below the pills (filters by ref, contact name, amount)
+- Scrollable list of quote rows. Each row:
+  - Status pill (left) — `OPEN` neutral, `ACCEPTED` moss-green, `DECLINED` red, `EXPIRED` slate
+  - Quote ref (`QT-038`) in mono, small
+  - Contact name (medium weight)
+  - Amount (right, bold)
+  - Sub-line: "Issued 2 Apr · Expires 2 May" (smaller, slate)
+
+**States**
+| State | UI |
+|---|---|
+| Loading | Skeleton rows |
+| Empty (no quotes for this filter) | Centered illustration + "No open quotes. Create one." with a primary CTA |
+| Pull to refresh | Native control re-hits `/v1/quotations?status=…` |
+| Tap row | Push to **05B detail** |
+| Tap "+ New" | Push to **05C create** |
+
+### 05B — Quotation detail
+
+**Purpose:** view a single quote, take action on it (accept, decline, convert, share).
+
+**Layout**
+- Header: back button + ref `QT-038` + overflow menu (•••) for archive / duplicate
+- Big status badge below header (one of `OPEN / ACCEPTED / DECLINED / EXPIRED / CONVERTED`)
+- Contact card: avatar + name + tap to push to contact detail
+- Amount summary card: subtotal · tax · **total** (large)
+- Line items list (read-only): description × qty @ unit price = amount
+- Notes block (if any)
+- Dates row: Issued · Expires · Updated
+- Sticky action bar at the bottom (above safe area):
+  - If status = `OPEN`: **Accept** · **Decline** · **Share** (overflow: convert)
+  - If status = `ACCEPTED`: **Convert to invoice** (primary, glowy) · **Share**
+  - If status = `CONVERTED`: card showing "Converted to INV-00510" with tap-to-open
+  - If status = `DECLINED` or `EXPIRED`: only **Share** + overflow
+
+**States**
+| State | UI |
+|---|---|
+| Loading | Skeleton hero + line-item placeholders |
+| Action loading (e.g. converting) | Sticky bar disabled with spinner; on success replace with success toast + new linked-invoice card |
+| Action error | Inline error in the action bar, retry available |
+| Network offline | Detail still shown from cache; action buttons disabled with "Offline — try again later" tooltip |
+
+### 05C — Quotation create
+
+**Purpose:** make a new quote in 5 fields or fewer.
+
+**Layout (modal stack pushed from "+ New" or dashboard quick action)**
+- Header: cancel (×) left · "New quote" title · save right (disabled until valid)
+- **Field 1** — Contact picker (required): tap opens contact bottom sheet (clients only by default, can switch to suppliers); at the bottom of the sheet is "+ New contact"
+- **Field 2** — Issue date (defaults to today)
+- **Field 3** — Expires date (defaults to issue + 30 days)
+- **Field 4** — Line items (required, at least one):
+  - Description · Qty · Unit price · Tax code · Amount (calculated)
+  - "Add line" link below
+- **Field 5** — Notes (optional, multiline)
+- Total card sticky at the bottom of scroll: subtotal + tax + total
+
+**States**
+| State | UI |
+|---|---|
+| Empty form | Save disabled |
+| Valid form | Save enabled (primary moss) |
+| Submitting | Save shows inline spinner, fields locked |
+| Validation error | Inline red text under offending field |
+| Save success | Push to **05B detail** of the new quote |
+
+## Screen 06 — Invoice workflow
+
+Mirrors the quotation flow with status-specific differences. Three screens.
+
+### 06A — Invoice list
+
+Same layout as **05A** with these differences:
+- Filter pills: **All · Draft · Sent · Paid · Overdue**
+- Status pill colours: `DRAFT` slate · `SENT` amber · `PAID` moss-green · `OVERDUE` red
+- Sub-line on each row: "Issued 2 Apr · Due 2 May" (or "Overdue 4 days" in red when overdue)
+
+### 06B — Invoice detail
+
+Same as **05B** with these differences:
+- Big status badge: `DRAFT / SENT / PARTIALLY PAID / PAID / OVERDUE`
+- Below the amount summary, an additional **Payments** block listing recorded payments (date · method · amount) with "+ Record payment" link
+- Action bar at the bottom:
+  - If `DRAFT`: **Send** · **Edit** · **Delete**
+  - If `SENT` or `OVERDUE`: **Record payment** (primary) · **Send reminder** · **Share**
+  - If `PAID`: **Share** · overflow (refund — Phase 2)
+  - If linked to a quote: a small "From QT-038 →" pill at the top, taps back to the quote
+
+### 06C — Invoice create
+
+Same as **05C** with:
+- Title: "New invoice"
+- "Issue date" + "Due date" replaces "Issue date" + "Expires"
+- "Save as draft" link in the header overflow (so people can keep adding line items without committing)
+
+When invoice create is triggered via **Convert quote → invoice**, the form is pre-filled from the quote and the user only needs to confirm the due date before saving.
+
+## Screen 07 — Contacts workflow
+
+### 07A — Contacts list
+
+**Purpose:** the unified parties directory.
+
+**Layout**
+- Sticky header: title "Contacts" + "+ New" CTA top-right
+- Segmented control: **Clients · Suppliers** (full width, just below the header). Selection persists per session.
+- Search input below the segmented control
+- Scrollable list of contact rows. Each row:
+  - Avatar circle (initial on a pastel gradient unique per contact)
+  - Name (bold) + sub-line ("3 invoices · RM 12k outstanding" for Clients, "Last bill 2 weeks ago" for Suppliers — Phase 2)
+  - Chevron right
+
+**States**
+| State | UI |
+|---|---|
+| Loading | Skeleton rows |
+| Empty (no contacts in segment) | Empty state: "No clients yet. Add one to start invoicing." with primary CTA |
+| Tap row | Push to **07B detail** |
+| Tap "+ New" | Push to **07C create** |
+
+### 07B — Contact detail
+
+**Purpose:** see a single contact and what they have outstanding.
+
+**Layout**
+- Header: back button + name + overflow (••• for edit, archive)
+- Big avatar + name + type pill (`CLIENT` moss / `SUPPLIER` slate)
+- Contact-info card: email · phone · address (each tappable — copies to clipboard)
+- Activity summary card:
+  - For Clients: total outstanding · open quotes · last invoice
+  - For Suppliers: last bill · total billed YTD (Phase 2 only — show empty state in v1)
+- Recent activity list: last ~10 quotes/invoices (Clients) or empty card (Suppliers in v1)
+- Action bar (sticky at bottom):
+  - Clients: **New quote** · **New invoice**
+  - Suppliers: empty in v1; **New bill** in Phase 2
+
+### 07C — Contact create
+
+**Purpose:** add a new client or supplier in under a minute.
+
+**Layout (modal stack)**
+- Header: cancel (×) · "New contact" · save (disabled until valid)
+- Type segmented control at the top: **Client · Supplier** (defaults to whatever segment was active when "+ New" was tapped)
+- Required fields: Name, Email
+- Optional fields: Phone, Tax ID, Address (collapsed under "Add address" link)
+- Notes (multiline)
+
+**States**
+| State | UI |
+|---|---|
+| Empty | Save disabled |
+| Valid | Save enabled |
+| Submitting | Spinner |
+| Save success | Pop modal; if user came from a quote/invoice form, return them to that form with the new contact pre-selected |
 
 ## Animations & micro-interactions
 

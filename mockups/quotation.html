@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quotation Workflow — scount.my Mobile</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=jetbrains-mono:400,500,600&display=swap" rel="stylesheet" />
+    <script>(function(){try{if(localStorage.getItem('scount-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: {
+            fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'], mono: ['JetBrains Mono','ui-monospace','monospace'] },
+            colors: {
+                ink: { 900:'#04110A', 800:'#061A0F', 700:'#082316', 600:'#0C2E1D' },
+                moss: { 50:'#ECFDF5',100:'#D1FAE5',200:'#A7F3D0',300:'#6EE7B7',400:'#34D399',500:'#10B981',600:'#059669',700:'#047857',800:'#065F46',900:'#064E3B' },
+            },
+            boxShadow: { 'glow-sm':'0 0 24px -6px rgba(16,185,129,0.4)' },
+        } } };
+    </script>
+    <style>
+        body { background-color: #F1F5F4; color: #0F172A; font-feature-settings: 'cv11','ss01','ss03'; transition: background-color .25s ease, color .25s ease; }
+        html.dark body { background-color: #020A06; color: #E8FFF3; }
+        .gradient-text { background: linear-gradient(135deg, #059669 0%, #10B981 40%, #047857 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        html.dark .gradient-text { background: linear-gradient(135deg, #6EE7B7 0%, #34D399 40%, #10B981 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .phone { width: 320px; aspect-ratio: 9 / 19.5; border-radius: 2.7rem; background: linear-gradient(180deg, #1f2937, #0f172a); padding: 4px; box-shadow: 0 30px 60px -15px rgba(15,23,42,0.35), 0 0 0 1px rgba(110,231,183,0.15), 0 12px 28px -8px rgba(15,23,42,0.18); position: relative; }
+        .phone-screen { position: relative; width: 100%; height: 100%; border-radius: 2.5rem; background: #FFFFFF; overflow: hidden; }
+        html.dark .phone-screen { background: #04110A; }
+        .island { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 90px; height: 26px; background: #04110A; border-radius: 999px; z-index: 30; }
+        .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font-size: 12px; font-weight: 600; color: #0F172A; z-index: 20; }
+        html.dark .statusbar { color: #E8FFF3; }
+        .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 110px; height: 4px; background: #94a3b8; border-radius: 999px; opacity: 0.85; z-index: 20; }
+        html.dark .home-bar { background: #475569; }
+        .screen-body { position: absolute; inset: 0; padding: 44px 16px 30px; overflow: hidden; display: flex; flex-direction: column; }
+        .phone-label { text-align: center; margin-top: 1.25rem; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; }
+        .phone-label .step { color: #059669; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+        html.dark .phone-label .step { color: #34D399; }
+        .phone-label .name { display: block; margin-top: 4px; font-size: 14px; letter-spacing: -0.01em; text-transform: none; font-weight: 700; }
+        .phone-label .desc { display: block; margin-top: 4px; font-size: 11px; font-weight: 400; color: #64748b; max-width: 280px; margin-left: auto; margin-right: auto; line-height: 1.4; letter-spacing: 0; text-transform: none; }
+        html.dark .phone-label .desc { color: rgba(232,255,243,0.55); }
+        .brand-pill { display: inline-grid; place-items: center; background: linear-gradient(135deg, #6EE7B7, #34D399 40%, #059669); box-shadow: inset 0 0 0 1px rgba(110,231,183,0.55), 0 6px 18px -6px rgba(16,185,129,0.55); border-radius: 14px; }
+        .theme-icon-sun { display: none; } .theme-icon-moon { display: inline; }
+        html.dark .theme-icon-sun { display: inline; } html.dark .theme-icon-moon { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+
+<header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-ink-900/70 border-b border-slate-200 dark:border-moss-900/40">
+    <div class="mx-auto max-w-7xl px-6 h-14 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <a href="preview.html" class="text-slate-500 hover:text-moss-700 dark:hover:text-moss-300 text-sm">←</a>
+            <span class="brand-pill w-8 h-8">
+                <svg class="w-4 h-4 text-ink-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 6.5C16 5 13.8 4.2 11.6 4.5 8.6 5 7 7 7 9c0 4.5 9.5 2.5 9.5 7 0 2-1.6 4-4.6 4.5-2.2.3-4.4-.5-5.9-2"/><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/></svg>
+            </span>
+            <div>
+                <div class="text-[15px] font-bold tracking-tight leading-none">scount<span class="text-moss-600 dark:text-moss-400">.my</span></div>
+                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 mt-0.5">Quotation workflow</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="hidden sm:inline-flex text-[11px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 px-2 py-1 rounded-full border border-slate-200 dark:border-moss-900/40">Screen 05</span>
+            <button type="button" id="theme-toggle" aria-label="Toggle theme" class="grid place-items-center w-9 h-9 rounded-lg border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-900 hover:bg-moss-50 dark:hover:bg-moss-900/40 text-slate-700 dark:text-moss-100/80 transition">
+                <svg class="theme-icon-moon w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="theme-icon-sun w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.93 19.07 1.41-1.41"/><path d="m17.66 6.34 1.41-1.41"/></svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<section class="mx-auto max-w-5xl px-6 pt-12 pb-6 text-center">
+    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Quotation — <span class="gradient-text">list, detail, create.</span></h1>
+    <p class="mt-3 text-sm sm:text-base text-slate-600 dark:text-moss-100/70 max-w-2xl mx-auto leading-relaxed">The three screens behind the Quotation tab. Tap into a quote to act on it; the convert-to-invoice button is one tap on the detail screen once it's accepted.</p>
+</section>
+
+<section class="mx-auto max-w-[1600px] px-6 py-10">
+    <div class="flex flex-wrap justify-center items-start gap-x-10 gap-y-14">
+
+        <!-- 05A · LIST -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between">
+                            <div class="text-[18px] font-bold tracking-tight text-slate-900 dark:text-moss-100">Quotations</div>
+                            <button class="w-8 h-8 rounded-full bg-moss-500 grid place-items-center text-white shadow-glow-sm">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Filter pills -->
+                        <div class="mt-3 flex gap-1.5 overflow-hidden">
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 dark:bg-ink-800/50 text-slate-600 dark:text-moss-100/70">All</span>
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-moss-500 text-white">Open · 12</span>
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 dark:bg-ink-800/50 text-slate-600 dark:text-moss-100/70">Accepted</span>
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 dark:bg-ink-800/50 text-slate-600 dark:text-moss-100/70">Expired</span>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="mt-3 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2 flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <span class="text-[12px] text-slate-400 dark:text-moss-300/70">Search ref, contact, amount</span>
+                        </div>
+
+                        <!-- List -->
+                        <div class="mt-3 space-y-1.5 overflow-hidden flex-1">
+                            <button class="w-full text-left rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="text-[8px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-slate-100 dark:bg-ink-700 text-slate-700 dark:text-moss-100/80 font-semibold">OPEN</span>
+                                        <span class="text-[10px] font-mono text-slate-500 dark:text-moss-300/70">QT-038</span>
+                                    </div>
+                                    <span class="text-[12px] font-bold text-slate-900 dark:text-moss-100">RM 8,720</span>
+                                </div>
+                                <div class="mt-0.5 flex items-center justify-between">
+                                    <div class="text-[11px] text-slate-700 dark:text-moss-100/80 truncate">CityWorks Sdn Bhd</div>
+                                </div>
+                                <div class="mt-0.5 text-[10px] text-slate-500 dark:text-moss-300/70">Issued 25 Apr · Expires 25 May</div>
+                            </button>
+
+                            <button class="w-full text-left rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="text-[8px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-slate-100 dark:bg-ink-700 text-slate-700 dark:text-moss-100/80 font-semibold">OPEN</span>
+                                        <span class="text-[10px] font-mono text-slate-500 dark:text-moss-300/70">QT-037</span>
+                                    </div>
+                                    <span class="text-[12px] font-bold text-slate-900 dark:text-moss-100">RM 24,600</span>
+                                </div>
+                                <div class="mt-0.5 text-[11px] text-slate-700 dark:text-moss-100/80 truncate">Borneo Coffee Co.</div>
+                                <div class="mt-0.5 text-[10px] text-slate-500 dark:text-moss-300/70">Issued 22 Apr · Expires 22 May</div>
+                            </button>
+
+                            <button class="w-full text-left rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="text-[8px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-moss-100 text-moss-700 dark:bg-moss-900/50 dark:text-moss-300 font-semibold">ACCEPTED</span>
+                                        <span class="text-[10px] font-mono text-slate-500 dark:text-moss-300/70">QT-036</span>
+                                    </div>
+                                    <span class="text-[12px] font-bold text-slate-900 dark:text-moss-100">RM 12,400</span>
+                                </div>
+                                <div class="mt-0.5 text-[11px] text-slate-700 dark:text-moss-100/80 truncate">PT Anugerah</div>
+                                <div class="mt-0.5 text-[10px] text-moss-700 dark:text-moss-300 font-medium">Ready to invoice →</div>
+                            </button>
+
+                            <button class="w-full text-left rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="text-[8px] font-mono uppercase tracking-wider px-1 py-0.5 rounded bg-slate-100 dark:bg-ink-700 text-slate-700 dark:text-moss-100/80 font-semibold">EXPIRED</span>
+                                        <span class="text-[10px] font-mono text-slate-500 dark:text-moss-300/70">QT-031</span>
+                                    </div>
+                                    <span class="text-[12px] font-bold text-slate-500 dark:text-moss-300/70">RM 5,200</span>
+                                </div>
+                                <div class="mt-0.5 text-[11px] text-slate-500 dark:text-moss-300/70 truncate">Acme Sdn Bhd</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">05A · List</span>
+                <span class="name">Quote inbox</span>
+                <span class="desc">Default filter is "Open" — the action-needed bucket. Status pills colour-code at a glance, accepted quotes get a "Ready to invoice →" nudge.</span>
+            </div>
+        </div>
+
+        <!-- 05B · DETAIL -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body !pb-[80px]">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between">
+                            <button class="w-8 h-8 rounded-full grid place-items-center text-slate-700 dark:text-moss-100/80">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                            </button>
+                            <div class="text-[14px] font-mono font-semibold text-slate-700 dark:text-moss-100/80">QT-036</div>
+                            <button class="w-8 h-8 rounded-full grid place-items-center text-slate-700 dark:text-moss-100/80">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Status badge -->
+                        <div class="mt-2 flex justify-center">
+                            <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-moss-100 text-moss-700 dark:bg-moss-900/50 dark:text-moss-300 font-bold">Accepted</span>
+                        </div>
+
+                        <!-- Contact -->
+                        <button class="mt-3 w-full rounded-xl bg-white dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 p-3 flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[13px] font-bold">P</div>
+                            <div class="flex-1 text-left min-w-0">
+                                <div class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">PT Anugerah Sdn Bhd</div>
+                                <div class="text-[10px] text-slate-500 dark:text-moss-300/70">billing@anugerah.example</div>
+                            </div>
+                            <svg class="w-3.5 h-3.5 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+
+                        <!-- Total summary -->
+                        <div class="mt-2 rounded-xl bg-gradient-to-br from-moss-500 to-moss-700 text-white p-3.5">
+                            <div class="text-[10px] uppercase tracking-wider text-white/80 font-semibold">Total</div>
+                            <div class="mt-0.5 text-[24px] font-bold tracking-tight">RM 12,400.00</div>
+                            <div class="mt-1 flex items-center justify-between text-[10px] text-white/85">
+                                <span>Subtotal RM 11,698</span>
+                                <span>Tax RM 702</span>
+                            </div>
+                        </div>
+
+                        <!-- Line items -->
+                        <div class="mt-2 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 divide-y divide-slate-200 dark:divide-moss-900/40 overflow-hidden">
+                            <div class="px-3 py-2 flex items-center justify-between">
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-medium text-slate-900 dark:text-moss-100 truncate">Audit retainer · April</div>
+                                    <div class="text-[9px] text-slate-500 dark:text-moss-300/70">1 × RM 8,000.00 · SST 6%</div>
+                                </div>
+                                <div class="text-[11px] font-semibold text-slate-900 dark:text-moss-100">RM 8,480</div>
+                            </div>
+                            <div class="px-3 py-2 flex items-center justify-between">
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-medium text-slate-900 dark:text-moss-100 truncate">Onboarding workshop</div>
+                                    <div class="text-[9px] text-slate-500 dark:text-moss-300/70">4 × RM 500.00</div>
+                                </div>
+                                <div class="text-[11px] font-semibold text-slate-900 dark:text-moss-100">RM 2,000</div>
+                            </div>
+                            <div class="px-3 py-2 flex items-center justify-between">
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-medium text-slate-900 dark:text-moss-100 truncate">Setup fee</div>
+                                    <div class="text-[9px] text-slate-500 dark:text-moss-300/70">1 × RM 1,800 · SST 6%</div>
+                                </div>
+                                <div class="text-[11px] font-semibold text-slate-900 dark:text-moss-100">RM 1,908</div>
+                            </div>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="mt-2 grid grid-cols-2 gap-2 text-[10px]">
+                            <div class="rounded-lg bg-white dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 px-2 py-1.5">
+                                <div class="text-slate-500 dark:text-moss-300/70 uppercase tracking-wider text-[9px]">Issued</div>
+                                <div class="font-semibold text-slate-900 dark:text-moss-100">22 Apr 2026</div>
+                            </div>
+                            <div class="rounded-lg bg-white dark:bg-ink-800/50 border border-slate-200 dark:border-moss-900/40 px-2 py-1.5">
+                                <div class="text-slate-500 dark:text-moss-300/70 uppercase tracking-wider text-[9px]">Expires</div>
+                                <div class="font-semibold text-slate-900 dark:text-moss-100">22 May 2026</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action bar -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-2 pb-5 px-3 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-3 gap-2">
+                            <button class="col-span-2 rounded-xl bg-moss-500 hover:bg-moss-600 text-white text-[12px] font-bold py-2.5 flex items-center justify-center gap-1.5 shadow-glow-sm">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                Convert to invoice
+                            </button>
+                            <button class="rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 text-slate-700 dark:text-moss-100/80 text-[12px] font-semibold py-2.5 flex items-center justify-center gap-1">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">05B · Detail</span>
+                <span class="name">View &amp; act</span>
+                <span class="desc">Status badge up top, contact card, big total, line items, sticky action bar. For ACCEPTED quotes, "Convert to invoice" is the primary action.</span>
+            </div>
+        </div>
+
+        <!-- 05C · CREATE -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body !pb-[80px]">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between">
+                            <button class="text-[18px] text-slate-700 dark:text-moss-100/80 leading-none">×</button>
+                            <div class="text-[14px] font-bold text-slate-900 dark:text-moss-100">New quote</div>
+                            <button class="text-[12px] font-semibold text-moss-700 dark:text-moss-300">Save</button>
+                        </div>
+
+                        <!-- Contact -->
+                        <div class="mt-4">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Contact</div>
+                            <button class="mt-1 w-full rounded-xl border-2 border-moss-400 ring-2 ring-moss-400/20 bg-white dark:bg-ink-800/50 px-3 py-2.5 flex items-center gap-2.5 text-left">
+                                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[11px] font-bold">C</div>
+                                <span class="text-[12px] font-medium text-slate-900 dark:text-moss-100 flex-1">CityWorks Sdn Bhd</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Dates row -->
+                        <div class="mt-3 grid grid-cols-2 gap-2">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Issued</div>
+                                <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2.5 py-2 text-[12px] text-slate-900 dark:text-moss-100">27 Apr 2026</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Expires</div>
+                                <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2.5 py-2 text-[12px] text-slate-900 dark:text-moss-100">27 May 2026</div>
+                            </div>
+                        </div>
+
+                        <!-- Line items -->
+                        <div class="mt-3">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Line items</div>
+                            <div class="mt-1 space-y-1.5">
+                                <div class="rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-2.5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-[12px] font-medium text-slate-900 dark:text-moss-100 truncate">Consulting · Q2</div>
+                                        <div class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">RM 5,000</div>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 dark:text-moss-300/70">10h × RM 500</div>
+                                </div>
+                                <button class="w-full rounded-xl border border-dashed border-moss-300 dark:border-moss-700/60 text-moss-700 dark:text-moss-300 px-3 py-2 text-[11px] font-semibold flex items-center justify-center gap-1.5">
+                                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                                    Add line
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mt-3">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Notes</div>
+                            <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-2.5 py-2 text-[11px] text-slate-500 dark:text-moss-300/70 italic min-h-[40px]">Net 30 from acceptance.</div>
+                        </div>
+                    </div>
+
+                    <!-- Total bar -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-2 pb-5 px-3 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-[9px] uppercase tracking-wider text-slate-500 dark:text-moss-300/70 font-semibold">Total · MYR</div>
+                                <div class="text-[18px] font-bold tracking-tight gradient-text">RM 5,300</div>
+                            </div>
+                            <button class="rounded-xl bg-moss-500 hover:bg-moss-600 text-white text-[12px] font-bold py-2.5 px-5 shadow-glow-sm">Save quote</button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">05C · Create</span>
+                <span class="name">Five fields, two taps</span>
+                <span class="desc">Modal stack: contact picker, dates, line items, notes. Total recalcs live in the sticky bar; Save lands you on the new quote's detail.</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="mx-auto max-w-3xl px-6 pb-20 pt-8">
+    <div class="rounded-2xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-6 text-sm text-slate-700 dark:text-moss-100/80 leading-relaxed">
+        <div class="text-[10px] font-mono uppercase tracking-widest text-moss-700 dark:text-moss-300 font-semibold">Notes</div>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Convert to invoice = one tap.</strong> On the detail screen for an ACCEPTED quote, the primary CTA fires <code class="font-mono text-moss-700 dark:text-moss-300">POST /v1/quotations/{id}/convert-to-invoice</code> and routes the user to the new invoice's detail. The quote becomes read-only and shows a "Converted to INV-00510 →" card.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Status pill colours.</strong> OPEN slate, ACCEPTED moss-green, DECLINED red, EXPIRED slate (dimmed), CONVERTED moss-green with a chain icon.</p>
+    </div>
+</section>
+
+<script>
+    const t = document.getElementById('theme-toggle');
+    if (t) t.addEventListener('click', () => { const r = document.documentElement; const d = r.classList.toggle('dark'); try { localStorage.setItem('scount-theme', d ? 'dark' : 'light'); } catch(e){} });
+</script>
+
+</body>
+</html>

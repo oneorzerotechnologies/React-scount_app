@@ -22,7 +22,19 @@ Mobile is for **on-the-go capture and oversight**, not heavy data entry. The web
 | [`docs/TECH-DECISIONS.md`](docs/TECH-DECISIONS.md) | Stack choices (React Native + Expo) and why |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phased delivery plan, milestones, target dates |
 | [`docs/API-CONTRACT.md`](docs/API-CONTRACT.md) | What the Laravel backend needs to expose |
+| [`docs/UI-DESIGN.md`](docs/UI-DESIGN.md) | Screen-by-screen UI spec — flow, layout, copy, states, interactions |
 | [`docs/STORE-RELEASE.md`](docs/STORE-RELEASE.md) | Apple App Store + Google Play submission checklist |
+
+## Visual mockups
+
+Open in any browser. Each file has a light/dark toggle in the top bar.
+
+| Mockup | What you see |
+|---|---|
+| [`mockups/preview.html`](mockups/preview.html) | First-run flow — splash → login → workspace → dashboard |
+| [`mockups/quotation.html`](mockups/quotation.html) | Quotation workflow — list, detail, create |
+| [`mockups/invoice.html`](mockups/invoice.html) | Invoice workflow — list, detail, create |
+| [`mockups/contacts.html`](mockups/contacts.html) | Contacts workflow — list (Clients / Suppliers segmented), detail, create |
 
 ## Quick links
 
