@@ -1,12 +1,45 @@
+# macOS
 .DS_Store
 *.bak
+
+# editors
 .vscode/
 .idea/
+
+# dependencies
 node_modules/
+
+# env
 .env
 .env.local
+.env*.local
+
+# Expo
 .expo/
-ios/build/
-android/build/
-android/.gradle/
+dist/
+web-build/
+expo-env.d.ts
+app-example
+
+# Metro
+.metro-health-check*
+
+# Native (only when prebuild has run)
+/ios
+/android
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 *.log
+
+# typescript
+*.tsbuildinfo
