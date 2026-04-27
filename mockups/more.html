@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>More &amp; Notifications — scount.my Mobile</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=jetbrains-mono:400,500,600&display=swap" rel="stylesheet" />
+    <script>(function(){try{if(localStorage.getItem('scount-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}})();</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: {
+            fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'], mono: ['JetBrains Mono','ui-monospace','monospace'] },
+            colors: { ink: { 900:'#04110A', 800:'#061A0F', 700:'#082316', 600:'#0C2E1D' }, moss: { 50:'#ECFDF5',100:'#D1FAE5',200:'#A7F3D0',300:'#6EE7B7',400:'#34D399',500:'#10B981',600:'#059669',700:'#047857',800:'#065F46',900:'#064E3B' } },
+            boxShadow: { 'glow-sm':'0 0 24px -6px rgba(16,185,129,0.4)' },
+        } } };
+    </script>
+    <style>
+        body { background-color: #F1F5F4; color: #0F172A; font-feature-settings: 'cv11','ss01','ss03'; transition: background-color .25s ease, color .25s ease; }
+        html.dark body { background-color: #020A06; color: #E8FFF3; }
+        .gradient-text { background: linear-gradient(135deg, #059669 0%, #10B981 40%, #047857 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        html.dark .gradient-text { background: linear-gradient(135deg, #6EE7B7 0%, #34D399 40%, #10B981 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .phone { width: 320px; aspect-ratio: 9 / 19.5; border-radius: 2.7rem; background: linear-gradient(180deg, #1f2937, #0f172a); padding: 4px; box-shadow: 0 30px 60px -15px rgba(15,23,42,0.35), 0 0 0 1px rgba(110,231,183,0.15), 0 12px 28px -8px rgba(15,23,42,0.18); position: relative; }
+        .phone-screen { position: relative; width: 100%; height: 100%; border-radius: 2.5rem; background: #FFFFFF; overflow: hidden; }
+        html.dark .phone-screen { background: #04110A; }
+        .island { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 90px; height: 26px; background: #04110A; border-radius: 999px; z-index: 30; }
+        .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font-size: 12px; font-weight: 600; color: #0F172A; z-index: 20; }
+        html.dark .statusbar { color: #E8FFF3; }
+        .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 110px; height: 4px; background: #94a3b8; border-radius: 999px; opacity: 0.85; z-index: 20; }
+        html.dark .home-bar { background: #475569; }
+        .screen-body { position: absolute; inset: 0; padding: 44px 16px 30px; overflow: hidden; display: flex; flex-direction: column; }
+        .phone-label { text-align: center; margin-top: 1.25rem; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; }
+        .phone-label .step { color: #059669; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+        html.dark .phone-label .step { color: #34D399; }
+        .phone-label .name { display: block; margin-top: 4px; font-size: 14px; letter-spacing: -0.01em; text-transform: none; font-weight: 700; }
+        .phone-label .desc { display: block; margin-top: 4px; font-size: 11px; font-weight: 400; color: #64748b; max-width: 280px; margin-left: auto; margin-right: auto; line-height: 1.4; letter-spacing: 0; text-transform: none; }
+        html.dark .phone-label .desc { color: rgba(232,255,243,0.55); }
+        .brand-pill { display: inline-grid; place-items: center; background: linear-gradient(135deg, #6EE7B7, #34D399 40%, #059669); box-shadow: inset 0 0 0 1px rgba(110,231,183,0.55), 0 6px 18px -6px rgba(16,185,129,0.55); border-radius: 14px; }
+        .theme-icon-sun { display: none; } .theme-icon-moon { display: inline; }
+        html.dark .theme-icon-sun { display: inline; } html.dark .theme-icon-moon { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+
+<header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-ink-900/70 border-b border-slate-200 dark:border-moss-900/40">
+    <div class="mx-auto max-w-7xl px-6 h-14 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <a href="preview.html" class="text-slate-500 hover:text-moss-700 dark:hover:text-moss-300 text-sm">←</a>
+            <span class="brand-pill w-8 h-8">
+                <svg class="w-4 h-4 text-ink-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 6.5C16 5 13.8 4.2 11.6 4.5 8.6 5 7 7 7 9c0 4.5 9.5 2.5 9.5 7 0 2-1.6 4-4.6 4.5-2.2.3-4.4-.5-5.9-2"/><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/></svg>
+            </span>
+            <div>
+                <div class="text-[15px] font-bold tracking-tight leading-none">scount<span class="text-moss-600 dark:text-moss-400">.my</span></div>
+                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 mt-0.5">More &amp; notifications</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="hidden sm:inline-flex text-[11px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 px-2 py-1 rounded-full border border-slate-200 dark:border-moss-900/40">Screen 08</span>
+            <button type="button" id="theme-toggle" aria-label="Toggle theme" class="grid place-items-center w-9 h-9 rounded-lg border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-900 hover:bg-moss-50 dark:hover:bg-moss-900/40 text-slate-700 dark:text-moss-100/80 transition">
+                <svg class="theme-icon-moon w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="theme-icon-sun w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.93 19.07 1.41-1.41"/><path d="m17.66 6.34 1.41-1.41"/></svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<section class="mx-auto max-w-5xl px-6 pt-12 pb-6 text-center">
+    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">More &amp; <span class="gradient-text">notifications.</span></h1>
+    <p class="mt-3 text-sm sm:text-base text-slate-600 dark:text-moss-100/70 max-w-2xl mx-auto leading-relaxed">The catch-all menu and the inbox of things that paged you while you were away. Both are designed to be scannable in seconds — no setting more than a tap deep.</p>
+</section>
+
+<section class="mx-auto max-w-[1600px] px-6 py-10">
+    <div class="flex flex-wrap justify-center items-start gap-x-10 gap-y-14">
+
+        <!-- 08A · MORE -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body !pb-[68px]">
+                        <!-- Title -->
+                        <div class="text-[18px] font-bold tracking-tight text-slate-900 dark:text-moss-100">More</div>
+
+                        <!-- Profile card -->
+                        <div class="mt-3 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-3 flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[14px] font-bold">E</div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">Eva Tan</div>
+                                <div class="text-[10px] text-slate-500 dark:text-moss-300/70">eva@acme.co</div>
+                            </div>
+                            <span class="text-[8px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-moss-100 dark:bg-moss-900/50 text-moss-700 dark:text-moss-300 font-bold">OWNER</span>
+                        </div>
+
+                        <!-- Active workspace -->
+                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Workspace</div>
+                        <button class="mt-1 w-full rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-2.5 flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-moss-300 to-moss-600 grid place-items-center text-white text-[11px] font-bold">A</div>
+                            <div class="flex-1 text-left">
+                                <div class="text-[12px] font-semibold text-slate-900 dark:text-moss-100">Acme Sdn Bhd</div>
+                                <div class="text-[9px] text-slate-500 dark:text-moss-300/70">Switch workspace · 3 available</div>
+                            </div>
+                            <svg class="w-3.5 h-3.5 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+
+                        <!-- Account section -->
+                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Account</div>
+                        <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 divide-y divide-slate-200 dark:divide-moss-900/40 overflow-hidden">
+                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Profile</span>
+                                <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                            <div class="w-full px-3 py-2 flex items-center gap-2">
+                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 11c0 5-3 8-3 8"/><path d="M14 14a8 8 0 0 0-8-8"/><path d="M17 21a18.4 18.4 0 0 0-2-9 4 4 0 0 0-7-1"/><path d="M5 12V8a7 7 0 0 1 12-4.9"/></svg>
+                                <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Biometric unlock</span>
+                                <span class="relative inline-block w-8 h-4 rounded-full bg-moss-500">
+                                    <span class="absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-white"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Preferences -->
+                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Preferences</div>
+                        <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 divide-y divide-slate-200 dark:divide-moss-900/40 overflow-hidden">
+                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/></svg>
+                                <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Appearance</span>
+                                <span class="text-[10px] text-slate-500 dark:text-moss-300/70">System</span>
+                                <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                                <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Notifications</span>
+                                <span class="text-[10px] text-moss-700 dark:text-moss-300">5 of 5 on</span>
+                                <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Support -->
+                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Support</div>
+                        <div class="mt-1 rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 divide-y divide-slate-200 dark:divide-moss-900/40 overflow-hidden">
+                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                                <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Help &amp; FAQ</span>
+                                <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                            <button class="w-full px-3 py-2 flex items-center gap-2 text-left">
+                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                <span class="flex-1 text-[12px] text-slate-900 dark:text-moss-100">Send feedback</span>
+                                <svg class="w-3 h-3 text-slate-400 dark:text-moss-300/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Open on web -->
+                        <button class="mt-3 w-full rounded-xl border border-moss-200 dark:border-moss-800/70 bg-moss-50 dark:bg-moss-900/40 px-3 py-2.5 flex items-center gap-2 text-left">
+                            <svg class="w-3.5 h-3.5 text-moss-700 dark:text-moss-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            <span class="flex-1 text-[12px] font-semibold text-moss-700 dark:text-moss-300">Get the rest on scount.my</span>
+                            <span class="text-[9px] font-mono text-moss-700/70 dark:text-moss-300/70">Web ↗</span>
+                        </button>
+
+                        <!-- Sign out -->
+                        <button class="mt-2 w-full rounded-xl border border-red-200 dark:border-red-700/40 bg-red-50/60 dark:bg-red-900/20 px-3 py-2.5 text-[12px] font-bold text-red-700 dark:text-red-300 flex items-center justify-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            Sign out
+                        </button>
+
+                        <!-- Footer -->
+                        <div class="mt-3 text-center text-[9px] text-slate-400 dark:text-moss-300/55 font-mono">
+                            scount.my mobile · v1.0.0 · build 142
+                        </div>
+                    </div>
+
+                    <!-- Tab bar -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+                                <span class="text-[9px]">Home</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                                <span class="text-[9px]">Quotation</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg>
+                                <span class="text-[9px]">Invoice</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span class="text-[9px]">Contacts</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>
+                                <span class="text-[9px] font-semibold">More</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">08A · More</span>
+                <span class="name">Catch-all menu</span>
+                <span class="desc">Profile · workspace switcher · biometric · appearance · notifications · help · feedback · "Get the rest on scount.my" · sign out · version footer. No setting more than one tap deep.</span>
+            </div>
+        </div>
+
+        <!-- 08B · NOTIFICATIONS -->
+        <div>
+            <div class="phone">
+                <div class="phone-screen">
+                    <div class="island"></div>
+                    <div class="statusbar"><span>9:41</span><span class="flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h2v-8H2v8zm5 0h2V10H7v12zm5 0h2V6h-2v16zm5 0h2v-4h-2v4zM17 6v6h2V6h-2z"/></svg><svg class="w-4 h-3" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="20" height="10" rx="2"/><rect x="3" y="5" width="14" height="6" rx="1" fill="currentColor"/></svg></span></div>
+
+                    <div class="screen-body !pb-[68px]">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between">
+                            <button class="w-8 h-8 rounded-full grid place-items-center text-slate-700 dark:text-moss-100/80">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                            </button>
+                            <div class="text-[14px] font-bold text-slate-900 dark:text-moss-100">Notifications</div>
+                            <button class="text-[10px] font-semibold text-moss-700 dark:text-moss-300">Mark all</button>
+                        </div>
+
+                        <!-- Filter pills -->
+                        <div class="mt-3 flex gap-1.5 overflow-hidden">
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-moss-500 text-white">All · 5</span>
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 dark:bg-ink-800/50 text-slate-600 dark:text-moss-100/70">Unread · 3</span>
+                            <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-slate-100 dark:bg-ink-800/50 text-slate-600 dark:text-moss-100/70">Mentions</span>
+                        </div>
+
+                        <!-- Today section -->
+                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Today</div>
+                        <div class="mt-1 space-y-1.5 overflow-hidden">
+                            <!-- Invoice paid (unread) -->
+                            <button class="w-full text-left rounded-xl border border-moss-200 dark:border-moss-800/70 bg-moss-50/60 dark:bg-moss-900/30 px-3 py-2.5 flex items-start gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-moss-500 grid place-items-center text-white shrink-0">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[12px] font-bold text-slate-900 dark:text-moss-100">Invoice paid</span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-moss-500"></span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-700 dark:text-moss-100/80 mt-0.5">PT Anugerah paid <span class="font-mono">INV-482</span> · RM 12,400</div>
+                                    <div class="text-[9px] text-slate-500 dark:text-moss-300/70 mt-0.5">2h ago</div>
+                                </div>
+                            </button>
+
+                            <!-- Quote accepted (unread) -->
+                            <button class="w-full text-left rounded-xl border border-moss-200 dark:border-moss-800/70 bg-moss-50/60 dark:bg-moss-900/30 px-3 py-2.5 flex items-start gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-moss-500 grid place-items-center text-white shrink-0">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[12px] font-bold text-slate-900 dark:text-moss-100">Quote accepted</span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-moss-500"></span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-700 dark:text-moss-100/80 mt-0.5">PT Anugerah accepted <span class="font-mono">QT-036</span> · ready to invoice</div>
+                                    <div class="text-[9px] text-slate-500 dark:text-moss-300/70 mt-0.5">5h ago</div>
+                                </div>
+                            </button>
+
+                            <!-- Invoice overdue (unread, red) -->
+                            <button class="w-full text-left rounded-xl border border-red-200 dark:border-red-700/40 bg-red-50/60 dark:bg-red-900/20 px-3 py-2.5 flex items-start gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-red-500 grid place-items-center text-white shrink-0">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6"/><path d="M12 16h.01"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[12px] font-bold text-slate-900 dark:text-moss-100">Invoice overdue</span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-700 dark:text-moss-100/80 mt-0.5">Borneo Coffee · <span class="font-mono">INV-478</span> · 4 days late</div>
+                                    <div class="text-[9px] text-slate-500 dark:text-moss-300/70 mt-0.5">8h ago</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Earlier section -->
+                        <div class="mt-3 text-[9px] font-mono uppercase tracking-widest text-slate-500 dark:text-moss-300/70 font-semibold px-1">Earlier this week</div>
+                        <div class="mt-1 space-y-1.5 overflow-hidden">
+                            <!-- Quote viewed (read) -->
+                            <button class="w-full text-left rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5 flex items-start gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-ink-700 grid place-items-center text-slate-500 dark:text-moss-300/70 shrink-0">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[12px] font-semibold text-slate-700 dark:text-moss-100/80">Quote viewed</div>
+                                    <div class="text-[10px] text-slate-500 dark:text-moss-300/70 mt-0.5">CityWorks opened <span class="font-mono">QT-038</span></div>
+                                    <div class="text-[9px] text-slate-400 dark:text-moss-300/55 mt-0.5">2d ago</div>
+                                </div>
+                            </button>
+
+                            <!-- Weekly digest (read) -->
+                            <button class="w-full text-left rounded-xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 px-3 py-2.5 flex items-start gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-ink-700 grid place-items-center text-slate-500 dark:text-moss-300/70 shrink-0">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8 14 12.7l-3-3L5 16"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[12px] font-semibold text-slate-700 dark:text-moss-100/80">Weekly digest</div>
+                                    <div class="text-[10px] text-slate-500 dark:text-moss-300/70 mt-0.5">RM 156k collected · 12 quotes sent · 3 new clients</div>
+                                    <div class="text-[9px] text-slate-400 dark:text-moss-300/55 mt-0.5">3d ago</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab bar (Home active — Notifications is a stack on top of Home) -->
+                    <div class="absolute left-0 right-0 bottom-0 pt-1.5 pb-5 border-t border-slate-200 dark:border-moss-900/40 bg-white/95 dark:bg-ink-900/95 backdrop-blur">
+                        <div class="grid grid-cols-5 px-2">
+                            <button class="flex flex-col items-center gap-0.5 text-moss-700 dark:text-moss-300">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+                                <span class="text-[9px] font-semibold">Home</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                                <span class="text-[9px]">Quotation</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg>
+                                <span class="text-[9px]">Invoice</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span class="text-[9px]">Contacts</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-0.5 text-slate-400 dark:text-moss-300/55">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                                <span class="text-[9px]">More</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="home-bar"></div>
+                </div>
+            </div>
+            <div class="phone-label">
+                <span class="step">08B · Notifications</span>
+                <span class="name">Inbox of pages</span>
+                <span class="desc">Reached via the bell icon on dashboard. Unread items get a moss tint and a green dot; overdue alerts get a red tint to stand out. Tapping any row deep-links to the source quote or invoice.</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="mx-auto max-w-3xl px-6 pb-20 pt-8">
+    <div class="rounded-2xl border border-slate-200 dark:border-moss-900/40 bg-white dark:bg-ink-800/50 p-6 text-sm text-slate-700 dark:text-moss-100/80 leading-relaxed">
+        <div class="text-[10px] font-mono uppercase tracking-widest text-moss-700 dark:text-moss-300 font-semibold">Notes</div>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Two contexts, one tab bar.</strong> 08A's tab bar shows <em>More</em> active because the user is sitting on that tab. 08B's tab bar shows <em>Home</em> active because Notifications is a stack screen pushed onto Home from the bell icon — popping it returns to the dashboard. Both keep the bar visible per the design rule.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Categories &amp; mute toggles.</strong> Five categories, each individually mutable from the Notifications sub-screen (linked from More): <em>Quote accepted</em>, <em>Quote viewed</em>, <em>Invoice paid</em>, <em>Invoice overdue</em>, <em>Weekly digest</em>. The summary "5 of 5 on" line on More tells the user at a glance whether anything is muted.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">"Get the rest on scount.my".</strong> The deep-link card opens the workspace web app in an in-app browser session. Same Sanctum token via short-lived web SSO — the user lands signed-in. Used for full reports, bank reconciliation, multi-line journals, year-end closing — anything intentionally kept off mobile.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">Sign out is destructive-styled.</strong> Red border + red text matches the platform convention for irreversible-ish actions. Tap surfaces a confirm sheet ("Sign out of Eva@acme.co?") so a fat-fingered tap doesn't dump the user back to the login screen.</p>
+        <p class="mt-2"><strong class="text-slate-900 dark:text-moss-100">No payment / reminder shortcuts here either.</strong> The More menu intentionally does not surface payment recording or reminder sending — those are web-only on v1, consistent with the invoice detail.</p>
+    </div>
+</section>
+
+<script>
+    const t = document.getElementById('theme-toggle');
+    if (t) t.addEventListener('click', () => { const r = document.documentElement; const d = r.classList.toggle('dark'); try { localStorage.setItem('scount-theme', d ? 'dark' : 'light'); } catch(e){} });
+</script>
+
+</body>
+</html>

@@ -35,6 +35,7 @@ Open in any browser. Each file has a light/dark toggle in the top bar.
 | [`mockups/quotation.html`](mockups/quotation.html) | Quotation workflow — list, detail, create |
 | [`mockups/invoice.html`](mockups/invoice.html) | Invoice workflow — list, detail, create |
 | [`mockups/contacts.html`](mockups/contacts.html) | Contacts workflow — list (Clients / Suppliers segmented), detail, create |
+| [`mockups/more.html`](mockups/more.html) | More tab + Notifications inbox |
 
 ## Quick links
 

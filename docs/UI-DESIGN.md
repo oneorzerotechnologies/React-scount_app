@@ -400,6 +400,62 @@ When invoice create is triggered via **Convert quote → invoice**, the form is 
 | Submitting | Spinner |
 | Save success | Pop modal; if user came from a quote/invoice form, return them to that form with the new contact pre-selected |
 
+## Screen 08 — More tab & Notifications
+
+### 08A — More
+
+**Purpose:** the catch-all settings menu and the gateway to web for everything mobile intentionally doesn't carry.
+
+**Layout (top → bottom)**
+- Title "More"
+- **Profile card** — avatar, name, email, role badge (`OWNER` / `ADMIN` / `MEMBER`)
+- **Workspace** section — a single tappable row showing the active workspace; opens the workspace switcher (same component as Screen 03)
+- **Account** section — Profile (edit), Biometric unlock toggle (default On after first successful sign-in)
+- **Preferences** section — Appearance (Light / Dark / System, sub-screen), Notifications (per-category toggles, sub-screen)
+- **Support** section — Help & FAQ, Send feedback (opens an in-app form that emails support@scount.my with device + version metadata attached)
+- **Open on web** card — moss-tinted, external-link icon, opens an in-app browser session at `scount.my` with short-lived web SSO so the user lands signed-in
+- **Sign out** — destructive-styled (red border, red text); tap surfaces a confirm sheet
+- **Footer** — `scount.my mobile · v1.0.0 · build 142`
+
+**States**
+| State | UI |
+|---|---|
+| Sign-out confirm | Action sheet "Sign out of eva@acme.co?" with destructive primary |
+| Update available | Small moss "Update" badge next to the version line; tap → store deep-link |
+| Single workspace | Workspace row hides "3 available" sub-line; tap is no-op (or routes to "Create workspace" modal) |
+
+### 08B — Notifications inbox
+
+**Purpose:** the inbox of things that paged the user while they were away. Reached via the bell icon in the dashboard header — it's a stack screen pushed onto the **Home** tab, so the tab bar still shows Home as active.
+
+**Layout**
+- Header: back · "Notifications" · "Mark all" (read)
+- Filter pills: **All · Unread · Mentions** (counts inline)
+- Sectioned list grouped by recency: **Today**, **Earlier this week**, **Earlier**
+- Each row: category icon (moss for action items, slate for info, red for overdue) + title + body + relative timestamp + unread dot
+
+**Categories (5)**
+| Category | When fired | Tint |
+|---|---|---|
+| Quote accepted | Customer accepts a quote on web | Moss |
+| Quote viewed | Customer first opens the share link | Slate |
+| Invoice paid | Payment recorded (on web) clears the balance | Moss |
+| Invoice overdue | Cron flips an invoice from sent → overdue | Red |
+| Weekly digest | Sunday 9pm local — collected, sent, new clients | Slate |
+
+Each category is individually mutable from the **Notifications** sub-screen reached from More. The summary line on More ("5 of 5 on") tells the user at a glance whether anything is muted.
+
+**States**
+| State | UI |
+|---|---|
+| Empty | "All caught up." with a small green check |
+| Tap row | Deep-link to the source quote / invoice / dashboard digest view; the row marks itself read |
+| Mark all | Confirm-less action; all unread go read instantly |
+
+### 08C — Notification preferences (sub-screen of More)
+
+Five toggles, one per category above. Toggling Off mutes both push and the in-app inbox row. A small "Quiet hours" sub-section at the bottom (Phase 2) will let the user silence everything between e.g. 10pm–7am.
+
 ## Animations & micro-interactions
 
 | Where | Effect | Duration |
@@ -411,7 +467,8 @@ When invoice create is triggered via **Convert quote → invoice**, the form is 
 | Pull to refresh | Spinner + bounce | system default |
 | Theme toggle | Background + text color tween | 250ms |
 | Tap feedback | Native ripple (Android) / tap highlight (iOS) | system default |
-| Successful payment recorded | Haptic notification (success) | — |
+| Quote saved / converted to invoice | Haptic notification (success) | — |
+| Share sheet opened | Light haptic | — |
 
 ## Accessibility
 
