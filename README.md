@@ -24,6 +24,7 @@ Mobile is for **on-the-go capture and oversight**, not heavy data entry. The web
 | [`docs/API-CONTRACT.md`](docs/API-CONTRACT.md) | What the Laravel backend needs to expose |
 | [`docs/openapi.yaml`](docs/openapi.yaml) | OpenAPI 3.0.3 machine-readable companion to API-CONTRACT.md |
 | [`docs/BACKEND-LAYOUT.md`](docs/BACKEND-LAYOUT.md) | Suggested Laravel file structure (controllers, requests, resources, policies, migrations) |
+| [`docs/MOBILE-LAYOUT.md`](docs/MOBILE-LAYOUT.md) | Suggested Expo project structure (Expo Router, TanStack Query hooks, Zustand stores, sample code) |
 | [`docs/UI-DESIGN.md`](docs/UI-DESIGN.md) | Screen-by-screen UI spec — flow, layout, copy, states, interactions |
 | [`docs/STORE-RELEASE.md`](docs/STORE-RELEASE.md) | Apple App Store + Google Play submission checklist |
 

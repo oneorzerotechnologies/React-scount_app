@@ -41,36 +41,29 @@ Opinionated stack choices with the reasoning behind each. Where we considered al
 
 ## Project structure
 
+High-level only — see [`MOBILE-LAYOUT.md`](MOBILE-LAYOUT.md) for the full tree, `package.json`, and sample code the team can copy-paste at `git init` time.
+
 ```
 scount_app/
-├── app/                  # Expo Router screens
-│   ├── (auth)/
-│   │   ├── login.tsx
-│   │   └── workspace-select.tsx
-│   ├── (tabs)/
-│   │   ├── dashboard.tsx
-│   │   ├── invoices/
-│   │   │   ├── index.tsx
-│   │   │   └── [id].tsx
-│   │   ├── expenses/
-│   │   ├── customers/
-│   │   └── more.tsx
-│   ├── _layout.tsx
-│   └── +not-found.tsx
+├── app/                    # Expo Router screens — file-based routing
+│   ├── (auth)/             # Splash, login, workspace-select
+│   └── (tabs)/             # Home · Quotation · Invoice · Contacts · More
 ├── src/
-│   ├── api/              # Network client + endpoint hooks
-│   ├── components/       # Shared components (Button, Card, etc.)
-│   ├── theme/            # Colours, typography, spacing tokens
-│   ├── hooks/            # Reusable hooks
-│   ├── stores/           # Zustand stores
-│   ├── lib/              # Utility helpers (formatters, validators)
-│   └── types/            # TypeScript interfaces shared across the app
-├── assets/               # Icons, fonts, images
-├── docs/                 # This folder
-├── app.config.ts         # Expo config (replaces app.json — TS gives us env interpolation)
-├── eas.json              # EAS Build profiles (development, preview, production)
+│   ├── api/                # axios client + endpoint modules
+│   ├── hooks/              # TanStack Query hooks per resource
+│   ├── stores/             # Zustand stores (auth, workspace, theme)
+│   ├── components/         # ui/ + per-resource folders (quotation/, invoice/, contact/, shared/)
+│   ├── theme/              # moss + ink palettes, typography, spacing
+│   ├── lib/                # money formatter, biometric, secure-store, push, deep-links
+│   └── types/              # TS types matching openapi.yaml schemas
+├── assets/                 # Icons, splash, Inter + JetBrains Mono fonts
+├── docs/                   # This folder
+├── app.config.ts           # Expo config (TS for env interpolation)
+├── eas.json                # EAS Build profiles
 └── package.json
 ```
+
+**Tabs match the locked design:** Home · Quotation · Invoice · Contacts · More. No expenses, no separate customers/vendors — those are Phase 2 (see [`PLAN.md`](PLAN.md) §4).
 
 ## Theming — match the web design
 
