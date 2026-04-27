@@ -41,36 +41,36 @@ These apply to every screen in the app, not just these four.
 | **Transitions** | 250ms ease for theme + push transitions; native push for navigation |
 | **Android theming** | Material 3 dynamic colour on Android 12+ — system tonal palette drives surfaces, dividers, and secondary accents. Brand `moss-500` stays for the brand mark, primary CTAs, the cash-on-hand hero gradient, and status pulses. iOS stays fully branded. |
 
-## Screen 01 — Landing
+## Screen 01 — Splash
 
 ### Purpose
-The first thing users see on cold start (first install, or signed-out state). Its only job is to direct them to one of two paths: **sign in** or **create account**.
+Pure brand moment held during cold start while the app reads the stored token, validates it, and decides where to route. **No CTAs, no decisions.** This is the equivalent of the iOS launch screen on a real device — except ours is themed and animated.
 
 ### Layout
 - Top safe area + status bar
-- Vertical centre: brand pill (64pt) → wordmark `scount.my` → tagline "Run the books, anywhere."
-- Bottom 30%: two stacked CTAs
-  - **Sign in** (primary, filled `moss-500`)
-  - **Create an account** (secondary, outlined)
-- Footer: "By continuing you agree to Terms & Privacy" (10pt, links open in-app web view)
+- Vertical centre: brand pill (80pt) → wordmark `scount.my` → tagline "Run the books, anywhere."
+- Bottom: a three-dot pulse loader (10pt above the home indicator)
+
+No buttons. No links. No footnotes.
 
 ### States
 | State | What happens |
 |---|---|
-| First launch | Animation: brand pill fades + slides up over 0.6s |
-| Returning, valid token | Skipped entirely — user goes straight to dashboard |
-| Returning, expired token | Shown briefly, then auto-route to login |
+| First launch (no token) | Hold for 5s (brand moment) → push to **02 Login** |
+| Returning, valid token, single workspace | Hold for 5s → push to **04 Dashboard** |
+| Returning, valid token, multiple workspaces | Hold for 5s → push to **03 Workspace** |
+| Returning, expired token | Hold for 5s → push to **02 Login**, prefill last email if available |
+| Network error during token check | Hold for 5s → push to **02 Login** with offline banner |
+
+**Note on the 5-second hold:** longer than the typical 1–2s splash. Intentional — gives the brand mark time to land and lets us run any background checks (auth refresh, version compatibility) without making the user wait an additional spinner screen. If the token check finishes early, we still wait out the 5 seconds; if it's still in flight at 5s, we push anyway and continue resolving in the background.
 
 ### Copy
 - Tagline: **Run the books, anywhere.**
-- Primary CTA: **Sign in**
-- Secondary CTA: **Create an account**
-- Footer microcopy: **By continuing you agree to our Terms & Privacy.**
+
+That's it. The screen has no other copy.
 
 ### Interactions
-- Tap *Sign in* → push to **02 Login**
-- Tap *Create an account* → in-app browser to `https://scount.my/register` (Phase 1 — native sign-up form is Phase 2)
-- Tap *Terms* / *Privacy* → in-app browser to scount.my pages
+- None. The screen is non-interactive by design — taps are a no-op until the token check completes.
 
 ## Screen 02 — Login
 
@@ -130,24 +130,8 @@ For users who belong to multiple workspaces (multi-business owners, accountants 
   - Role badge: `Owner` (filled green) / `Admin` (outlined) / `Member` (outlined)
   - "Last used 2h ago" timestamp
   - Chevron right
-  - **Last-used workspace** is wrapped in a `border-2 border-moss-400` ring **and shows a 3-second countdown bar across the bottom of the card** (full → empty over 3s)
-- Auto-advance helper line below the highlighted card: **"Opening in 3s · Tap to stay"**
+  - **Last-used workspace** is wrapped in a `border-2 border-moss-400` ring as a visual hint — but selection is always an explicit tap.
 - Bottom: dashed "+ Create new workspace" button
-
-### Auto-advance behaviour
-
-When this screen first renders, a 3-second countdown begins for the last-used workspace.
-
-| Trigger | Effect |
-|---|---|
-| 3 seconds elapse with no input | POST `/v1/workspaces/{id}/select` for the last-used workspace, navigate to **04 Dashboard** |
-| Tap the highlighted (last-used) card | Cancel countdown, treat as explicit selection (same navigation, but no further wait) |
-| Tap a different card | Cancel countdown, select that workspace instead |
-| Tap anywhere else on the screen (search bar, scroll area) | Cancel countdown, leave UI in "manual select" mode (countdown does not restart) |
-| User scrolls before timeout | Cancel countdown |
-| Network error during auto-select | Surface inline error on the card; user can tap to retry |
-
-**Why a countdown bar, not a spinner?** Predictability — users see exactly how long they have, and the bar reads as "active by default" rather than "loading". The microcopy "Tap to stay" makes the cancel affordance unambiguous.
 
 ### States
 | State | UI |
@@ -155,8 +139,6 @@ When this screen first renders, a 3-second countdown begins for the last-used wo
 | Single workspace | This screen never renders — user lands on dashboard |
 | 2–5 workspaces | List, no search input |
 | 6+ workspaces | Search input appears at top |
-| First render (multi-workspace) | Countdown starts on the last-used card |
-| Countdown cancelled | Bar fades out, "Tap to stay" microcopy disappears, all cards now require explicit tap |
 | Tapping a card | Card flashes moss-50 background, chevron fades to spinner, navigation to dashboard begins |
 | Tapping "Create new workspace" | In-app browser to `https://scount.my/register/workspace` |
 
@@ -173,7 +155,7 @@ When this screen first renders, a 3-second countdown begins for the last-used wo
 ## Screen 04 — Dashboard (Home tab)
 
 ### Purpose
-The "what's my business doing right now" answer in one glance. Plus the three actions worth the trip to the phone.
+**v1 mobile is scoped to quotations and invoices only.** The dashboard answers two questions in one glance: *what am I owed?* and *what should I act on next?* Plus two quick actions for the only verbs the app supports — create a quote, create an invoice.
 
 ### Layout
 
@@ -183,17 +165,40 @@ The "what's my business doing right now" answer in one glance. Plus the three ac
 - Avatar circle (right-most) — taps to "More" tab
 
 **Below the header (scrollable):**
-1. Greeting block: "Good morning, Eva" *(am/pm aware — "Good evening" after 6pm)*
-2. Hero card: **Cash on hand** — green gradient, large number, "3 accounts · ▲ 8.2% this month"
-3. Two-up KPI cards: **Revenue MTD**, **Outstanding** (with invoice count)
-4. Cash flow chart card: 30-day sparkline + total delta
-5. Three quick-action buttons: **+ Invoice**, **+ Expense**, **+ Customer**
-6. Recent activity heading + "See all" link
-7. Last 5 transaction rows (compact)
+1. Greeting block: "Good morning, Eva" *(am/pm aware)*
+2. **Hero card — "You're owed"** — green gradient, total outstanding (sum of unpaid invoices), sub-line: "8 unpaid invoices · 3 due this week"
+3. **Two-up cards (action items)** — these are deliberately the things needing follow-up, not vanity metrics:
+   - **Open quotes** — count + total pipeline value (e.g. "12 · RM 84.2k pipeline"). White card.
+   - **Overdue** — count + total amount (e.g. "3 · RM 18.4k · chase up"). Amber-tinted card to draw attention.
+4. **Collected · 30d** chart card — sparkline of payments received over the last 30 days, with total at top right
+5. **Two quick-action buttons** (full-width pair):
+   - **New quote** — outlined moss style
+   - **New invoice** — solid moss-500 (primary, glowy)
+6. **Recent activity** — compact list of last ~5 events, mixing quotes and invoices. Each row shows a status pill (`PAID` green, `SENT` amber, `QUOTE` sky-blue, `OVERDUE` red), the document number, the counterparty, and the amount.
 
 **Tab bar (sticky at bottom, 78pt incl. safe area):**
-- Home / Invoices / Expenses / Contacts / More
+- **Home / Quotation / Invoice / Contacts / More**
 - Active tab uses `moss-700` (light) / `moss-300` (dark); inactive `slate-400`
+- Quotation and Invoice each get a first-class tab — they're the entire product surface in v1.
+- **Contacts** is the umbrella label for the parties directory. Inside the tab, a segmented control at the top toggles between **Clients** (people you bill) and **Suppliers** (people you owe). One tab, both sides of the ledger.
+- Everything else (Reports, Expenses, Bills, Reconciliation, Fixed Assets, Settings) is parked behind **More** until v2.
+
+### Why these specific cards
+
+| Card | Why it's there |
+|---|---|
+| Hero "You're owed" | The single number a small-business owner opens the app to check. Bigger and bolder than anything else. |
+| Open quotes | Quotes that haven't converted are revenue leaking. Pipeline value gives context, not just a count. |
+| Overdue (amber) | The other side of the same coin — money you should already have. Amber treatment is intentional cognitive nag. |
+| Collected 30d | Visual proof the business is moving — and the only chart on the screen. Everything else is a number. |
+| New quote / New invoice | The two verbs the app does. No third action; we don't want to dilute focus. |
+| Recent activity | Confirms recent actions worked + lets the user jump back into a doc with one tap. |
+
+### What's intentionally NOT here
+
+- No expense capture, no customer-list KPI, no inventory, no cash-on-hand-across-accounts. Those are out of scope for v1 mobile.
+- No goal-tracking, no AI recommendations, no streaks. Fintech for SMEs, not a habit-tracker.
+- No charts beyond the single sparkline. Phone screens get cluttered fast.
 
 ### States
 | State | What user sees |
@@ -249,14 +254,14 @@ The "what's my business doing right now" answer in one glance. Plus the three ac
 
 ## Locked decisions
 
-These were the open questions in the first review pass. Answers below are final for v1.
-
 | # | Question | Decision |
 |---|---|---|
 | 1 | Sign in with Apple / Google in v1? | **No.** Email + password only. Revisit in Phase 2 once we see drop-off data on the login screen. |
 | 2 | Dashboard hero card? | **Cash on hand.** Stays as currently mocked. |
 | 3 | Android theming? | **Material 3 dynamic colour** on Android 12+ (system tonal palette drives surfaces & secondary accents). Brand `moss-500` is reserved for the brand mark, primary CTAs, and the hero "Cash on hand" gradient — those never change. iOS stays fully branded. |
-| 4 | Workspace screen — auto-advance? | **Auto-advance to last-used workspace after 3 seconds.** Cancellable by tapping anywhere on the screen or by tapping a different workspace. See updated Screen 03 spec for the countdown UI. |
+| 4 | Workspace screen — auto-advance? | **No.** Selection is always an explicit tap. Last-used workspace is highlighted as a visual hint only. |
+| 5 | Landing screen CTAs? | **None.** Screen 01 is a pure splash / brand moment. Held **5 seconds** while we validate the stored token, then auto-routes to login or workspace/dashboard. |
+| 6 | Bottom tab bar? | **Home · Quotation · Invoice · Contacts · More.** The Contacts tab is the unified parties directory with a segmented toggle inside (Clients / Suppliers). Expenses + Bills + Reports + Fixed Assets + Reconciliation all live behind More. |
 
 ## Stack confirmation
 

@@ -26,32 +26,38 @@ Not targeted in v1: accountants doing books, finance teams running close.
 
 ### Must-have for v1.0 launch
 
+**v1 mobile is deliberately scoped to quote-to-cash.** Quotations and invoices, plus the auth and contact-management plumbing they need. Every other module ships in later phases.
+
 | Surface | Detail |
 |---|---|
-| **Auth** | Email/password login, biometric unlock (Face ID / Touch ID / Android biometric), workspace switcher for multi-business users |
-| **Dashboard** | KPIs (revenue MTD, outstanding, cash on hand), 30-day cash-flow sparkline, last 5 transactions |
-| **Invoices** | List, filter (paid / sent / overdue), detail view, **create invoice in ≤ 5 fields**, send via email/share |
-| **Expenses** | Quick capture: photo → amount → category → vendor → save. OCR auto-fill is Phase 2. |
-| **Customers & Vendors** | Searchable list, detail card with statement/aging snapshot, "new" form |
-| **Notifications** | Push: invoice paid, payment due, payment received, weekly digest |
-| **Profile & Workspace** | Switch workspace, change theme, sign out, invite teammate (deep-links to web) |
+| **Auth** | Email/password login, 5-second branded splash, biometric unlock (Face ID / Touch ID / Android biometric) from session 2, workspace switcher for multi-business users |
+| **Dashboard (Home)** | "You're owed" hero (outstanding amount), Open quotes / Overdue invoices 2-up, 30-day collected chart, two quick actions (+ Quote, + Invoice), recent activity feed |
+| **Quotation** | List with filters (open / accepted / declined / expired), detail view, create in ≤ 5 fields, send via email/share, **convert quote → invoice** in one tap |
+| **Invoice** | List with filters (draft / sent / paid / overdue), detail view, create, record payment, send via email/share |
+| **Contacts** | Unified parties directory with a segmented Clients / Suppliers toggle inside. Searchable list per segment, detail card, create new contact of either type. Precondition for quotes, invoices, and the Phase-2 bills/expenses flows. |
+| **Notifications** | Push: quote accepted, quote viewed, invoice paid, invoice overdue, weekly digest |
+| **More tab** | Switch workspace, change theme, sign out, version, send feedback, "Get the rest on the web" (deep-link to app.scount.my) |
 
 ### Explicitly NOT in v1
 
-- POS / cashier mode (→ Phase 2)
-- Bank reconciliation (web-only — too dense for mobile)
-- Full report viewers — only the dashboard summary tiles in v1
-- Multi-line journal entries (web-only)
-- Year-end closing (web-only)
-- Stock / inventory adjustments (Phase 2)
+- **Expense capture** (→ Phase 2 — was originally in v1, deferred to keep scope tight on quote-to-cash)
+- **Vendor management** (→ Phase 2, paired with expenses)
+- **POS / cashier mode** (→ Phase 2)
+- **Bank reconciliation** (web-only — too dense for mobile)
+- **Full report viewers** (only the dashboard summary tiles in v1)
+- **Multi-line journal entries** (web-only)
+- **Year-end closing** (web-only)
+- **Stock / inventory adjustments** (Phase 2)
+- **Fixed assets** (web-only for v1)
 
 ### Phase 2 (post-launch, ~3 months later)
 
-- POS mode (cashier UI for tablets)
-- OCR receipt parsing (auto-fill amount, date, merchant)
-- Inventory: stock count, low-stock alerts, transfers
-- Approvals: bills awaiting payment, expenses awaiting review
-- In-app payments (collect via the app)
+- **Expense capture** with photo + OCR auto-fill (amount, date, merchant)
+- **Vendor management** + bills list/create
+- **POS mode** (cashier UI for tablets)
+- **Inventory:** stock count, low-stock alerts, transfers
+- **Approvals:** bills awaiting payment, expenses awaiting review
+- **In-app payments** (collect via the app)
 
 ### Phase 3 (later)
 
