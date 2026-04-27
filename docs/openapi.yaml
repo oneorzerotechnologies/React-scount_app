@@ -32,7 +32,7 @@ info:
 servers:
   - url: https://api.scount.my
     description: Production
-  - url: https://staging.api.scount.my
+  - url: https://api.scount.ink
     description: Staging
   - url: https://scount.test/api
     description: Local Herd dev
