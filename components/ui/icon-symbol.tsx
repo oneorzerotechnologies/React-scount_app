@@ -23,6 +23,10 @@ const MAPPING = {
   'list.bullet.rectangle.fill': 'receipt',
   'person.2.fill': 'groups',
   'ellipsis': 'more-horiz',
+  // scount.my misc
+  'plus': 'add',
+  'magnifyingglass': 'search',
+  'chevron.left': 'chevron-left',
 } as IconMapping;
 
 /**
