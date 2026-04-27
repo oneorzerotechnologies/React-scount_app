@@ -1,0 +1,12 @@
+.DS_Store
+*.bak
+.vscode/
+.idea/
+node_modules/
+.env
+.env.local
+.expo/
+ios/build/
+android/build/
+android/.gradle/
+*.log
