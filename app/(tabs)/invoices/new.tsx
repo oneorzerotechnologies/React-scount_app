@@ -187,30 +187,31 @@ export default function NewInvoiceScreen() {
               style={[styles.textarea, styles.textareaPrivate, { color: palette.text }]}
             />
           </Section>
-        </ScrollView>
 
-        <View style={[styles.totalBar, { backgroundColor: palette.surface, borderTopColor: palette.border }]}>
-          <View>
-            <Text style={[styles.totalLabel, { color: palette.textMuted }]}>TOTAL · MYR</Text>
-            <Text style={[styles.totalAmount, { color: palette.text }]}>
-              {formatMoneyCompact(total, 'MYR')}
-            </Text>
-            <Text style={[styles.totalBreak, { color: palette.textMuted }]}>
-              Subtotal {formatMoneyCompact(subtotal, 'MYR')}
-              {taxEnabled && ` · Tax ${formatMoneyCompact(tax, 'MYR')}`}
-            </Text>
+          {/* Total + save inline at end of scroll */}
+          <View style={[styles.totalBlock, { backgroundColor: palette.surface, borderColor: palette.border }]}>
+            <View>
+              <Text style={[styles.totalLabel, { color: palette.textMuted }]}>TOTAL · MYR</Text>
+              <Text style={[styles.totalAmount, { color: palette.text }]}>
+                {formatMoneyCompact(total, 'MYR')}
+              </Text>
+              <Text style={[styles.totalBreak, { color: palette.textMuted }]}>
+                Subtotal {formatMoneyCompact(subtotal, 'MYR')}
+                {taxEnabled && ` · Tax ${formatMoneyCompact(tax, 'MYR')}`}
+              </Text>
+            </View>
+            <Pressable
+              onPress={onSave}
+              disabled={!canSave}
+              style={({ pressed }) => [
+                styles.saveBtn,
+                { opacity: canSave ? (pressed ? 0.85 : 1) : 0.5 },
+              ]}
+            >
+              <Text style={styles.saveBtnText}>Save & send</Text>
+            </Pressable>
           </View>
-          <Pressable
-            onPress={onSave}
-            disabled={!canSave}
-            style={({ pressed }) => [
-              styles.saveBtn,
-              { opacity: canSave ? (pressed ? 0.85 : 1) : 0.5 },
-            ]}
-          >
-            <Text style={styles.saveBtnText}>Save & send</Text>
-          </Pressable>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
 
       <ContactPicker
@@ -318,10 +319,11 @@ const styles = StyleSheet.create({
     color: '#B45309', fontSize: 7, fontWeight: '800', letterSpacing: 0.6, fontFamily: 'ui-monospace',
   },
 
-  totalBar: {
+  totalBlock: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 10, paddingBottom: 24,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    marginTop: 16,
+    borderWidth: 1, borderRadius: 12,
+    paddingHorizontal: 12, paddingVertical: 12,
   },
   totalLabel:  { fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
   totalAmount: { fontSize: 18, fontWeight: '800', letterSpacing: -0.4 },

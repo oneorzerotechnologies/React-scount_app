@@ -95,13 +95,24 @@ export type UpcomingCycle = {
   currency:     string;
 };
 
+export type GeneratedCycle = {
+  id:           string;
+  ref:          string;
+  issue_date:   string;
+  total_minor:  number;
+  currency:     string;
+  status:       InvoiceStatus;
+  sent_at:      string | null;
+};
+
 export type Recurrence = {
-  enabled:         boolean;
-  frequency:       RecurrenceFrequency;
-  anchor_day:      number;
-  next_at:         string;
-  ends_at:         string | null;
-  upcoming_cycles: UpcomingCycle[];
+  enabled:           boolean;
+  frequency:         RecurrenceFrequency;
+  anchor_day:        number;
+  next_at:           string;
+  ends_at:           string | null;
+  upcoming_cycles:   UpcomingCycle[];
+  generated_cycles:  GeneratedCycle[];
 };
 
 export type FromQuotationRef = {

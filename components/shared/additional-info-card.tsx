@@ -12,16 +12,13 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 export function AdditionalInfoCard({
   terms,
   remarks,
-  internal,
 }: {
   terms?:    string | null;
   remarks?:  string | null;
-  internal?: string | null;
 }) {
   const palette = Colors[useColorScheme() ?? 'light'];
 
-  // Skip the whole card if the workspace hasn't set anything.
-  if (!terms && !remarks && !internal) return null;
+  if (!terms && !remarks) return null;
 
   return (
     <View style={[styles.card, { backgroundColor: palette.surface, borderColor: palette.border }]}>
@@ -38,25 +35,26 @@ export function AdditionalInfoCard({
           <Text style={[styles.value, { color: palette.text }]} numberOfLines={2}>{remarks}</Text>
         </Row>
       )}
+    </View>
+  );
+}
 
-      {internal && (
-        <Row
-          label="Internal"
-          labelColor={palette.textMuted}
-          labelTrailing={
-            <View style={styles.privateBadge}>
-              <Text style={styles.privateBadgeText}>PRIVATE</Text>
-            </View>
-          }
-        >
-          <Text
-            style={[styles.value, styles.italic, { color: palette.text }]}
-            numberOfLines={2}
-          >
-            {internal}
-          </Text>
-        </Row>
-      )}
+export function InternalRemarksCard({ internal }: { internal?: string | null }) {
+  const palette = Colors[useColorScheme() ?? 'light'];
+
+  if (!internal) return null;
+
+  return (
+    <View style={[styles.card, styles.privateCard, { borderColor: '#FDE68A' }]}>
+      <View style={styles.privateHeader}>
+        <Text style={[styles.eyebrow, { color: '#B45309', marginBottom: 0 }]}>INTERNAL REMARKS</Text>
+        <View style={styles.privateBadge}>
+          <Text style={styles.privateBadgeText}>PDF-HIDDEN</Text>
+        </View>
+      </View>
+      <Text style={[styles.value, styles.italic, styles.privateBody, { color: palette.text }]}>
+        {internal}
+      </Text>
     </View>
   );
 }
@@ -85,6 +83,9 @@ function Row({
 
 const styles = StyleSheet.create({
   card: { borderWidth: 1, borderRadius: 12, padding: 12 },
+  privateCard: { backgroundColor: 'rgba(254,243,199,0.4)', marginTop: 8 },
+  privateHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
+  privateBody: { marginTop: 2 },
   eyebrow: { fontSize: 10, fontWeight: '700', letterSpacing: 0.8, marginBottom: 8 },
 
   row:      { flexDirection: 'row', alignItems: 'flex-start', marginTop: 6 },

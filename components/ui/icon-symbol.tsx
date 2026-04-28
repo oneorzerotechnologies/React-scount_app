@@ -31,6 +31,10 @@ const MAPPING = {
   'square.and.arrow.up': 'ios-share',
   'arrow.right': 'arrow-forward',
   'info.circle': 'info-outline',
+  'pause.fill': 'pause',
+  'play.fill': 'play-arrow',
+  'bolt.fill': 'flash-on',
+  'arrow.down.doc': 'file-download',
 } as IconMapping;
 
 /**

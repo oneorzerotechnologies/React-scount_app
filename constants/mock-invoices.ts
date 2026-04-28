@@ -26,12 +26,16 @@ export const MOCK_INVOICES: Invoice[] = [
       enabled:    true,
       frequency:  'monthly',
       anchor_day: 23,
-      next_at:    '2026-05-23',
+      next_at:    '2026-04-23',
       ends_at:    null,
       upcoming_cycles: [
+        { issue_date: '2026-04-23', amount_minor: 620_000, currency: 'MYR' },
         { issue_date: '2026-05-23', amount_minor: 620_000, currency: 'MYR' },
         { issue_date: '2026-06-23', amount_minor: 620_000, currency: 'MYR' },
-        { issue_date: '2026-07-23', amount_minor: 620_000, currency: 'MYR' },
+      ],
+      generated_cycles: [
+        { id: 'inv_476', ref: 'INV-476', issue_date: '2026-02-23', total_minor: 620_000, currency: 'MYR', status: 'paid',    sent_at: '2026-02-24T09:12:00Z' },
+        { id: 'inv_477', ref: 'INV-477', issue_date: '2026-03-23', total_minor: 620_000, currency: 'MYR', status: 'overdue', sent_at: null },
       ],
     },
     from_quotation:       { id: 'qt_031', ref: 'QT-031' },

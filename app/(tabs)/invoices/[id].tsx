@@ -1,10 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PaymentsBlock } from '@/components/invoice/payments-block';
 import { UpcomingCyclesCard } from '@/components/invoice/upcoming-cycles-card';
-import { AdditionalInfoCard } from '@/components/shared/additional-info-card';
+import { AdditionalInfoCard, InternalRemarksCard } from '@/components/shared/additional-info-card';
 import { TotalCard } from '@/components/shared/total-card';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { StatusPill } from '@/components/ui/status-pill';
@@ -45,13 +45,21 @@ export default function InvoiceDetailScreen() {
     } catch { /* cancelled */ }
   };
 
+  const onDownload = () => {
+    // Wire-up: GET /v1/invoices/{id}/pdf → save via expo-file-system → preview
+    // via expo-sharing. For v0 just announce intent.
+    // eslint-disable-next-line no-console
+    console.log('Download PDF', inv.id);
+    Alert.alert('Saving PDF', `${inv.ref}.pdf will appear in Files once download completes.`);
+  };
+
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
         <Pressable
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/invoices'))}
-          hitSlop={8}
+          onPress={() => router.replace('/(tabs)/invoices')}
+          hitSlop={20}
           style={styles.iconBtn}
         >
           <IconSymbol name="chevron.left" size={20} color={palette.text} />
@@ -199,21 +207,37 @@ export default function InvoiceDetailScreen() {
           <AdditionalInfoCard
             terms={inv.terms_and_conditions}
             remarks={inv.remarks}
-            internal={inv.internal_remarks}
           />
         </View>
-      </ScrollView>
 
-      {/* Action bar — Share only on v1 (no record-payment, no reminders) */}
-      <View style={[styles.actionBar, { backgroundColor: palette.surface, borderTopColor: palette.border }]}>
-        <Pressable
-          onPress={onShare}
-          style={({ pressed }) => [styles.primary, pressed && { opacity: 0.85 }]}
-        >
-          <IconSymbol name="square.and.arrow.up" size={14} color="#fff" />
-          <Text style={styles.primaryText}>Share</Text>
-        </Pressable>
-      </View>
+        {/* Internal remarks (workspace-only, never on PDF) */}
+        <InternalRemarksCard internal={inv.internal_remarks} />
+
+        {/* Inline actions at end of view */}
+        <View style={styles.actionsBlock}>
+          <View style={styles.actionRow}>
+            <Pressable
+              onPress={onShare}
+              style={({ pressed }) => [styles.primary, styles.actionFlex, pressed && { opacity: 0.85 }]}
+            >
+              <IconSymbol name="square.and.arrow.up" size={14} color="#fff" />
+              <Text style={styles.primaryText}>Share</Text>
+            </Pressable>
+            <Pressable
+              onPress={onDownload}
+              style={({ pressed }) => [
+                styles.secondary,
+                styles.actionFlex,
+                { borderColor: palette.border, backgroundColor: palette.surface },
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <IconSymbol name="arrow.down.doc" size={14} color={palette.text} />
+              <Text style={[styles.secondaryText, { color: palette.text }]}>Download PDF</Text>
+            </Pressable>
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -294,10 +318,9 @@ const styles = StyleSheet.create({
   dateLabel:{ fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
   dateValue:{ fontSize: 13, fontWeight: '700', marginTop: 2 },
 
-  actionBar: {
-    paddingHorizontal: 12, paddingVertical: 10, paddingBottom: 24,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
+  actionsBlock: { marginTop: 16 },
+  actionRow: { flexDirection: 'row', gap: 8 },
+  actionFlex: { flex: 1 },
   primary: {
     backgroundColor: moss[500],
     borderRadius: 14,
@@ -306,4 +329,10 @@ const styles = StyleSheet.create({
     shadowColor: moss[700], shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 14,
   },
   primaryText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  secondary: {
+    borderWidth: 1, borderRadius: 14,
+    paddingVertical: 12,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+  },
+  secondaryText: { fontSize: 13, fontWeight: '600' },
 });

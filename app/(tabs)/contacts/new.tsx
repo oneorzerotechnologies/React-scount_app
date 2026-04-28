@@ -141,20 +141,19 @@ export default function NewContactScreen() {
               />
             </View>
           )}
-        </ScrollView>
 
-        <View style={[styles.bar, { backgroundColor: palette.surface, borderTopColor: palette.border }]}>
           <Pressable
             onPress={onSave}
             disabled={!canSave}
             style={({ pressed }) => [
               styles.saveBtn,
+              styles.saveBtnInline,
               { opacity: canSave ? (pressed ? 0.85 : 1) : 0.5 },
             ]}
           >
             <Text style={styles.saveBtnText}>Save contact</Text>
           </Pressable>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -180,13 +179,10 @@ const styles = StyleSheet.create({
   addAddress: { paddingVertical: 8 },
   addAddressText: { fontSize: 12, fontWeight: '700' },
 
-  bar: {
-    paddingHorizontal: 16, paddingVertical: 10, paddingBottom: 24,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
   saveBtn: {
     backgroundColor: moss[500], borderRadius: 14, paddingVertical: 12, alignItems: 'center',
     shadowColor: moss[700], shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 14,
   },
+  saveBtnInline: { marginTop: 16 },
   saveBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 });

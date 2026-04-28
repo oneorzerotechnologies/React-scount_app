@@ -30,7 +30,11 @@ export default function ContactDetailScreen() {
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['top']}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.iconBtn}>
+        <Pressable
+          onPress={() => router.replace('/(tabs)/contacts')}
+          hitSlop={20}
+          style={styles.iconBtn}
+        >
           <IconSymbol name="chevron.left" size={20} color={palette.text} />
         </Pressable>
         <Text style={[styles.headerName, { color: palette.text }]} numberOfLines={1}>{c.name}</Text>
@@ -104,27 +108,27 @@ export default function ContactDetailScreen() {
             </Text>
           </View>
         )}
-      </ScrollView>
 
-      {/* Action bar — clients get New quote / New invoice; suppliers get nothing in v1. */}
-      {isClient && (
-        <View style={[styles.actionBar, { backgroundColor: palette.surface, borderTopColor: palette.border }]}>
-          <Pressable
-            onPress={() => router.push('/(tabs)/quotations/new')}
-            style={({ pressed }) => [styles.secondary, { borderColor: moss[300], backgroundColor: moss[50] }, pressed && { opacity: 0.85 }]}
-          >
-            <IconSymbol name="doc.text.fill" size={14} color={moss[700]} />
-            <Text style={[styles.secondaryText, { color: moss[700] }]}>New quote</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push('/(tabs)/invoices/new')}
-            style={({ pressed }) => [styles.primary, pressed && { opacity: 0.85 }]}
-          >
-            <IconSymbol name="list.bullet.rectangle.fill" size={14} color="#fff" />
-            <Text style={styles.primaryText}>New invoice</Text>
-          </Pressable>
-        </View>
-      )}
+        {/* Inline actions at end of view (clients only) */}
+        {isClient && (
+          <View style={styles.actionsBlock}>
+            <Pressable
+              onPress={() => router.push('/(tabs)/quotations/new')}
+              style={({ pressed }) => [styles.secondary, { borderColor: moss[300], backgroundColor: moss[50] }, pressed && { opacity: 0.85 }]}
+            >
+              <IconSymbol name="doc.text.fill" size={14} color={moss[700]} />
+              <Text style={[styles.secondaryText, { color: moss[700] }]}>New quote</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => router.push('/(tabs)/invoices/new')}
+              style={({ pressed }) => [styles.primary, pressed && { opacity: 0.85 }]}
+            >
+              <IconSymbol name="list.bullet.rectangle.fill" size={14} color="#fff" />
+              <Text style={styles.primaryText}>New invoice</Text>
+            </Pressable>
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -203,10 +207,9 @@ const styles = StyleSheet.create({
   suppliersStub: { borderWidth: 1, borderRadius: 12, padding: 16, alignItems: 'center' },
   suppliersStubText: { fontSize: 11, fontStyle: 'italic' },
 
-  actionBar: {
+  actionsBlock: {
     flexDirection: 'row', gap: 8,
-    paddingHorizontal: 12, paddingVertical: 10, paddingBottom: 24,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    marginTop: 16,
   },
   secondary: {
     flex: 1,

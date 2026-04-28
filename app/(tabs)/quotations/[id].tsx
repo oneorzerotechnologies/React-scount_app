@@ -1,8 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AdditionalInfoCard } from '@/components/shared/additional-info-card';
+import { AdditionalInfoCard, InternalRemarksCard } from '@/components/shared/additional-info-card';
 import { TotalCard } from '@/components/shared/total-card';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { StatusPill } from '@/components/ui/status-pill';
@@ -29,8 +29,8 @@ export default function QuotationDetailScreen() {
     );
   }
 
-  const isAccepted = quote.status === 'accepted';
-  const isReadOnly = quote.status === 'expired' || quote.status === 'converted';
+  const isReadOnly  = quote.status === 'expired' || quote.status === 'converted';
+  const canConvert  = !isReadOnly && !quote.linked_invoice;
 
   const onShare = async () => {
     try {
@@ -47,13 +47,21 @@ export default function QuotationDetailScreen() {
     console.log('Convert', quote.id, '→ POST /v1/quotations/{id}/convert-to-invoice');
   };
 
+  const onDownload = () => {
+    // Wire-up: GET /v1/quotations/{id}/pdf → save via expo-file-system → preview
+    // via expo-sharing. v0 just announces intent.
+    // eslint-disable-next-line no-console
+    console.log('Download PDF', quote.id);
+    Alert.alert('Saving PDF', `${quote.ref}.pdf will appear in Files once download completes.`);
+  };
+
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
         <Pressable
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/quotations'))}
-          hitSlop={8}
+          onPress={() => router.replace('/(tabs)/quotations')}
+          hitSlop={20}
           style={styles.iconBtn}
         >
           <IconSymbol name="chevron.left" size={20} color={palette.text} />
@@ -155,9 +163,11 @@ export default function QuotationDetailScreen() {
           <AdditionalInfoCard
             terms={quote.terms_and_conditions}
             remarks={quote.remarks}
-            internal={quote.internal_remarks}
           />
         </View>
+
+        {/* Internal remarks (workspace-only, never on PDF) */}
+        <InternalRemarksCard internal={quote.internal_remarks} />
 
         {/* Linked invoice (if converted) */}
         {quote.linked_invoice && (
@@ -171,41 +181,48 @@ export default function QuotationDetailScreen() {
             </Text>
           </Pressable>
         )}
-      </ScrollView>
 
-      {/* Action bar */}
-      <View style={[styles.actionBar, { backgroundColor: palette.surface, borderTopColor: palette.border }]}>
-        {isAccepted ? (
-          <View style={styles.acceptedRow}>
+        {/* Inline actions at end of view */}
+        <View style={styles.actionsBlock}>
+          {canConvert && (
             <Pressable
               onPress={onConvert}
-              style={({ pressed }) => [styles.primary, styles.primaryWide, pressed && { opacity: 0.85 }]}
+              style={({ pressed }) => [styles.primary, styles.convertBtn, pressed && { opacity: 0.85 }]}
             >
               <IconSymbol name="arrow.right" size={14} color="#fff" />
               <Text style={styles.primaryText}>Convert to invoice</Text>
             </Pressable>
+          )}
+          <View style={[styles.actionRow, canConvert && { marginTop: 8 }]}>
             <Pressable
               onPress={onShare}
               style={({ pressed }) => [
+                canConvert ? styles.secondary : styles.primary,
+                styles.actionFlex,
+                canConvert && { borderColor: palette.border, backgroundColor: palette.surface },
+                pressed && { opacity: canConvert ? 0.7 : 0.85 },
+              ]}
+            >
+              <IconSymbol name="square.and.arrow.up" size={14} color={canConvert ? palette.text : '#fff'} />
+              <Text style={canConvert ? [styles.secondaryText, { color: palette.text }] : styles.primaryText}>
+                Share
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={onDownload}
+              style={({ pressed }) => [
                 styles.secondary,
+                styles.actionFlex,
                 { borderColor: palette.border, backgroundColor: palette.surface },
                 pressed && { opacity: 0.7 },
               ]}
             >
-              <IconSymbol name="square.and.arrow.up" size={14} color={palette.text} />
-              <Text style={[styles.secondaryText, { color: palette.text }]}>Share</Text>
+              <IconSymbol name="arrow.down.doc" size={14} color={palette.text} />
+              <Text style={[styles.secondaryText, { color: palette.text }]}>Download PDF</Text>
             </Pressable>
           </View>
-        ) : (
-          <Pressable
-            onPress={onShare}
-            style={({ pressed }) => [styles.primary, pressed && { opacity: 0.85 }]}
-          >
-            <IconSymbol name="square.and.arrow.up" size={14} color="#fff" />
-            <Text style={styles.primaryText}>Share</Text>
-          </Pressable>
-        )}
-      </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -282,13 +299,10 @@ const styles = StyleSheet.create({
   linkedLabel: { fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
   linkedRef:   { fontSize: 13, fontWeight: '700', marginTop: 2 },
 
-  actionBar: {
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    paddingBottom: 24,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  acceptedRow: { flexDirection: 'row', gap: 8 },
+  actionsBlock: { marginTop: 16 },
+  actionRow:  { flexDirection: 'row', gap: 8 },
+  actionFlex: { flex: 1 },
+  convertBtn: { width: '100%' },
   primary: {
     backgroundColor: moss[500],
     borderRadius: 14,
@@ -302,11 +316,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 14,
   },
-  primaryWide: { flex: 2 },
   primaryText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 
   secondary: {
-    flex: 1,
     borderWidth: 1,
     borderRadius: 14,
     paddingVertical: 12,
