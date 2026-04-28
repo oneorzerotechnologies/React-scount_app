@@ -49,7 +49,11 @@ export default function InvoiceDetailScreen() {
     <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.iconBtn}>
+        <Pressable
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/invoices'))}
+          hitSlop={8}
+          style={styles.iconBtn}
+        >
           <IconSymbol name="chevron.left" size={20} color={palette.text} />
         </Pressable>
         <Text style={[styles.headerRef, { color: palette.text }]}>{inv.ref}</Text>

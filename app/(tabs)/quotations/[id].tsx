@@ -51,7 +51,11 @@ export default function QuotationDetailScreen() {
     <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.iconBtn}>
+        <Pressable
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/quotations'))}
+          hitSlop={8}
+          style={styles.iconBtn}
+        >
           <IconSymbol name="chevron.left" size={20} color={palette.text} />
         </Pressable>
 
@@ -286,7 +290,6 @@ const styles = StyleSheet.create({
   },
   acceptedRow: { flexDirection: 'row', gap: 8 },
   primary: {
-    flex: 1,
     backgroundColor: moss[500],
     borderRadius: 14,
     paddingVertical: 12,
@@ -299,7 +302,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 14,
   },
-  primaryWide: { flexBasis: '66%' },
+  primaryWide: { flex: 2 },
   primaryText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 
   secondary: {
