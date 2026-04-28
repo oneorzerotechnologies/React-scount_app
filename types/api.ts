@@ -8,9 +8,13 @@ export type QuotationStatus =
   | 'draft' | 'open' | 'accepted' | 'declined' | 'expired' | 'converted';
 
 export type LineItem = {
-  description:      string;
+  /** Short item name — primary visual on list rows. */
+  name:             string;
+  /** Optional longer description — wraps below the name on the PDF. */
+  description:      string | null;
   quantity:         number;
   unit_price_minor: number;
+  /** Tax code, e.g. 'SST6', or null when this line is tax-exempt. */
   tax_code:         string | null;
   line_total_minor: number;
 };

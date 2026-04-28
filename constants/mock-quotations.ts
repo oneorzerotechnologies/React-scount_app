@@ -21,8 +21,8 @@ export const MOCK_QUOTATIONS: Quotation[] = [
     tax_minor:            49_359,
     total_minor:          872_000,
     line_items: [
-      { description: 'Site survey · Q2 portfolio',  quantity: 1,  unit_price_minor: 500_000, tax_code: 'SST6', line_total_minor: 530_000 },
-      { description: 'Drafting hours',              quantity: 8,  unit_price_minor:  40_000, tax_code: 'SST6', line_total_minor: 339_200 },
+      { name: 'Site survey',     description: 'Q2 portfolio · 4 properties',      quantity: 1, unit_price_minor: 500_000, tax_code: 'SST6', line_total_minor: 530_000 },
+      { name: 'Drafting hours',  description: null,                                quantity: 8, unit_price_minor:  40_000, tax_code: 'SST6', line_total_minor: 339_200 },
     ],
     terms_and_conditions: 'Net 30 from acceptance. 50% deposit on signing.',
     remarks:              'Please confirm by 30 Apr.',
@@ -44,8 +44,8 @@ export const MOCK_QUOTATIONS: Quotation[] = [
     tax_minor:            139_246,
     total_minor:          2_460_000,
     line_items: [
-      { description: 'Audit retainer · Q2',         quantity: 1, unit_price_minor: 1_800_000, tax_code: 'SST6', line_total_minor: 1_908_000 },
-      { description: 'Compliance workshop',         quantity: 4, unit_price_minor:    130_000, tax_code: 'SST6', line_total_minor: 551_200 },
+      { name: 'Audit retainer',       description: 'Quarterly audit · Q2',          quantity: 1, unit_price_minor: 1_800_000, tax_code: 'SST6', line_total_minor: 1_908_000 },
+      { name: 'Compliance workshop',  description: '4 sessions × 90 min, recorded', quantity: 4, unit_price_minor:    130_000, tax_code: 'SST6', line_total_minor: 551_200 },
     ],
     terms_and_conditions: 'Net 30 from acceptance.',
     remarks:              null,
@@ -67,9 +67,9 @@ export const MOCK_QUOTATIONS: Quotation[] = [
     tax_minor:            70_200,
     total_minor:          1_240_000,
     line_items: [
-      { description: 'Audit retainer · April',  quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 848_000 },
-      { description: 'Onboarding workshop',     quantity: 4, unit_price_minor:  50_000, tax_code: null,   line_total_minor: 200_000 },
-      { description: 'Setup fee',               quantity: 1, unit_price_minor: 180_000, tax_code: 'SST6', line_total_minor: 190_800 },
+      { name: 'Audit retainer',     description: 'April retainer · scope per SOW',  quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 848_000 },
+      { name: 'Onboarding workshop',description: '4 sessions × 90 min',             quantity: 4, unit_price_minor:  50_000, tax_code: null,   line_total_minor: 200_000 },
+      { name: 'Setup fee',          description: 'One-time engagement setup',       quantity: 1, unit_price_minor: 180_000, tax_code: 'SST6', line_total_minor: 190_800 },
     ],
     terms_and_conditions: 'Net 30 from acceptance. 50% non-refundable deposit upon signing.',
     remarks:              'Please confirm by 30 Apr.',
@@ -91,7 +91,7 @@ export const MOCK_QUOTATIONS: Quotation[] = [
     tax_minor:            38_491,
     total_minor:          680_000,
     line_items: [
-      { description: 'Marine equipment audit',      quantity: 1, unit_price_minor: 641_509, tax_code: 'SST6', line_total_minor: 680_000 },
+      { name: 'Marine equipment audit', description: 'Annual ISM audit pack',       quantity: 1, unit_price_minor: 641_509, tax_code: 'SST6', line_total_minor: 680_000 },
     ],
     terms_and_conditions: 'Net 45.',
     remarks:              null,
@@ -113,7 +113,7 @@ export const MOCK_QUOTATIONS: Quotation[] = [
     tax_minor:            29_434,
     total_minor:          520_000,
     line_items: [
-      { description: 'Setup retainer',  quantity: 1, unit_price_minor: 490_566, tax_code: 'SST6', line_total_minor: 520_000 },
+      { name: 'Setup retainer', description: null,  quantity: 1, unit_price_minor: 490_566, tax_code: 'SST6', line_total_minor: 520_000 },
     ],
     terms_and_conditions: 'Net 30.',
     remarks:              null,

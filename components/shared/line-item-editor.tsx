@@ -6,18 +6,22 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { formatMoneyCompact } from '@/lib/money';
 import type { LineItem } from '@/types/api';
 
+const SST_RATE = 0.06;
+const SST_CODE = 'SST6';
+
 /**
  * Inline line-item editor used by Quotation create/edit + Invoice
- * create/edit. Keeps things simple — description + quantity + unit
- * price, computes line totals as we go. Tax code picker lives in
- * a sub-screen (Phase 2) — for v0 we default to the workspace's
- * default_tax_code or null.
+ * create/edit. Mirrors the web form layout:
+ *   • Item name (required)
+ *   • Description (optional, multi-line)
+ *   • Qty × unit price → line total
+ *   • Per-line tax toggle (SST 6% on/off)
  */
 export function LineItemEditor({
   items,
   currency,
   onChange,
-  defaultTaxCode = null,
+  defaultTaxCode = SST_CODE,
 }: {
   items:           LineItem[];
   currency:        string;
@@ -42,7 +46,8 @@ export function LineItemEditor({
     onChange([
       ...items,
       {
-        description:      '',
+        name:             '',
+        description:      null,
         quantity:         1,
         unit_price_minor: 0,
         tax_code:         defaultTaxCode,
@@ -54,51 +59,87 @@ export function LineItemEditor({
   return (
     <View>
       <View style={styles.list}>
-        {items.map((li, i) => (
-          <View
-            key={i}
-            style={[styles.row, { backgroundColor: palette.surface, borderColor: palette.border }]}
-          >
-            <View style={styles.rowMain}>
-              <TextInput
-                value={li.description}
-                onChangeText={(v) => update(i, { description: v })}
-                placeholder="Description"
-                placeholderTextColor={slate[400]}
-                style={[styles.descInput, { color: palette.text }]}
-              />
-              <Text style={[styles.lineTotal, { color: palette.text }]}>
-                {formatMoneyCompact(li.line_total_minor, currency)}
-              </Text>
-            </View>
-
-            <View style={styles.rowMeta}>
-              <Text style={[styles.metaLabel, { color: palette.textMuted }]}>Qty</Text>
-              <TextInput
-                value={String(li.quantity)}
-                onChangeText={(v) => update(i, { quantity: Number(v) || 0 })}
-                keyboardType="numeric"
-                style={[styles.numInput, { color: palette.text, borderColor: palette.border }]}
-              />
-              <Text style={[styles.metaLabel, { color: palette.textMuted }]}>×</Text>
-              <TextInput
-                value={String(li.unit_price_minor / 100)}
-                onChangeText={(v) => update(i, { unit_price_minor: Math.round(Number(v) * 100) || 0 })}
-                keyboardType="decimal-pad"
-                style={[styles.numInput, styles.priceInput, { color: palette.text, borderColor: palette.border }]}
-              />
-              {li.tax_code && (
-                <Text style={[styles.taxBadge, { color: moss[700], borderColor: moss[200] }]}>
-                  {li.tax_code === 'SST6' ? 'SST 6%' : li.tax_code}
+        {items.map((li, i) => {
+          const taxed = !!li.tax_code;
+          return (
+            <View
+              key={i}
+              style={[styles.row, { backgroundColor: palette.surface, borderColor: palette.border }]}
+            >
+              {/* Name + line total */}
+              <View style={styles.headRow}>
+                <TextInput
+                  value={li.name}
+                  onChangeText={(v) => update(i, { name: v })}
+                  placeholder="Item name *"
+                  placeholderTextColor={slate[400]}
+                  style={[styles.nameInput, { color: palette.text }]}
+                />
+                <Text style={[styles.lineTotal, { color: palette.text }]}>
+                  {formatMoneyCompact(li.line_total_minor, currency)}
                 </Text>
-              )}
+                <Pressable onPress={() => remove(i)} hitSlop={6} style={styles.removeBtn}>
+                  <Text style={{ color: slate[400], fontSize: 18, lineHeight: 18 }}>×</Text>
+                </Pressable>
+              </View>
 
-              <Pressable onPress={() => remove(i)} hitSlop={6} style={styles.removeBtn}>
-                <Text style={{ color: slate[400], fontSize: 16, lineHeight: 16 }}>×</Text>
-              </Pressable>
+              {/* Description (optional, multiline) */}
+              <TextInput
+                value={li.description ?? ''}
+                onChangeText={(v) => update(i, { description: v.length > 0 ? v : null })}
+                placeholder="Description (optional)"
+                placeholderTextColor={slate[400]}
+                multiline
+                style={[styles.descInput, { color: palette.textMuted }]}
+              />
+
+              {/* Qty × unit price + tax toggle */}
+              <View style={styles.metaRow}>
+                <View style={styles.qtyGroup}>
+                  <Text style={[styles.metaLabel, { color: palette.textMuted }]}>QTY</Text>
+                  <TextInput
+                    value={String(li.quantity)}
+                    onChangeText={(v) => update(i, { quantity: Number(v) || 0 })}
+                    keyboardType="numeric"
+                    style={[styles.numInput, { color: palette.text, borderColor: palette.border }]}
+                  />
+                </View>
+
+                <Text style={[styles.times, { color: palette.textMuted }]}>×</Text>
+
+                <View style={styles.priceGroup}>
+                  <Text style={[styles.metaLabel, { color: palette.textMuted }]}>UNIT</Text>
+                  <TextInput
+                    value={String(li.unit_price_minor / 100)}
+                    onChangeText={(v) => update(i, { unit_price_minor: Math.round(Number(v) * 100) || 0 })}
+                    keyboardType="decimal-pad"
+                    style={[styles.numInput, styles.priceInput, { color: palette.text, borderColor: palette.border }]}
+                  />
+                </View>
+
+                <Pressable
+                  onPress={() => update(i, { tax_code: taxed ? null : SST_CODE })}
+                  style={({ pressed }) => [
+                    styles.taxToggle,
+                    taxed
+                      ? { backgroundColor: moss[500], borderColor: moss[500] }
+                      : { backgroundColor: 'transparent', borderColor: palette.border },
+                    pressed && { opacity: 0.85 },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.taxToggleText,
+                      { color: taxed ? '#fff' : palette.textMuted },
+                    ]}
+                  >
+                    {taxed ? 'SST 6%' : '+ Tax'}
+                  </Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
       </View>
 
       <Pressable
@@ -114,50 +155,48 @@ export function LineItemEditor({
 
 function computeLineTotal(li: LineItem): number {
   const subtotal = Math.round(li.quantity * li.unit_price_minor);
-  const taxRate  = li.tax_code === 'SST6' ? 0.06 : 0;
-  return Math.round(subtotal * (1 + taxRate));
+  const rate     = li.tax_code === SST_CODE ? SST_RATE : 0;
+  return Math.round(subtotal * (1 + rate));
 }
 
 const styles = StyleSheet.create({
   list: { gap: 6 },
-  row:  {
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+  row: {
+    borderWidth: 1, borderRadius: 12,
+    paddingHorizontal: 12, paddingVertical: 10,
+    gap: 6,
   },
-  rowMain: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  descInput: { flex: 1, fontSize: 13, fontWeight: '600', paddingVertical: 0 },
-  lineTotal: { fontSize: 13, fontWeight: '700' },
 
-  rowMeta: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-  metaLabel: { fontSize: 10 },
+  headRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  nameInput: { flex: 1, fontSize: 14, fontWeight: '700', paddingVertical: 0 },
+  lineTotal: { fontSize: 14, fontWeight: '800' },
+  removeBtn: { width: 22, height: 22, alignItems: 'center', justifyContent: 'center' },
+
+  descInput: {
+    fontSize: 12,
+    paddingVertical: 0,
+    minHeight: 18,
+    textAlignVertical: 'top',
+  },
+
+  metaRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, marginTop: 4 },
+  qtyGroup:   { width: 50 },
+  priceGroup: { width: 88 },
+  metaLabel:  { fontSize: 9, fontWeight: '700', letterSpacing: 0.6, marginBottom: 2 },
   numInput: {
-    minWidth: 28,
-    borderWidth: 1,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    fontSize: 11,
-    textAlign: 'center',
+    borderWidth: 1, borderRadius: 6,
+    paddingHorizontal: 6, paddingVertical: 4,
+    fontSize: 12, textAlign: 'center',
   },
-  priceInput: { minWidth: 56 },
+  priceInput: { textAlign: 'right' },
+  times:     { fontSize: 12, marginBottom: 5 },
 
-  taxBadge: {
-    marginLeft: 4,
-    fontSize: 9,
-    fontWeight: '700',
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-    fontFamily: 'ui-monospace',
-  },
-
-  removeBtn: {
+  taxToggle: {
     marginLeft: 'auto',
-    width: 20, height: 20, alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderRadius: 999,
+    paddingHorizontal: 10, paddingVertical: 5,
   },
+  taxToggleText: { fontSize: 10, fontWeight: '800', letterSpacing: 0.4 },
 
   addBtn: {
     marginTop: 8,

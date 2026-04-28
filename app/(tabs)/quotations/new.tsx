@@ -35,14 +35,14 @@ export default function NewQuotationScreen() {
   const [pickerOpen,   setPickerOpen]   = useState(false);
   const [contact,      setContact]      = useState<Contact | null>(MOCK_CONTACTS[0]);
   const [items,        setItems]        = useState<LineItem[]>([
-    { description: 'Consulting · Q2', quantity: 10, unit_price_minor: 50_000, tax_code: null, line_total_minor: 500_000 },
+    { name: 'Consulting', description: 'Q2 advisory hours', quantity: 10, unit_price_minor: 50_000, tax_code: 'SST6', line_total_minor: 530_000 },
   ]);
   const [terms,        setTerms]        = useState('Net 30 from acceptance.');
   const [remarks,      setRemarks]      = useState('');
   const [internalNote, setInternalNote] = useState('');
 
   const total = items.reduce((sum, li) => sum + li.line_total_minor, 0);
-  const canSave = !!contact && items.length > 0 && items.every((li) => li.description.trim().length > 0);
+  const canSave = !!contact && items.length > 0 && items.every((li) => li.name.trim().length > 0);
 
   const onSave = () => {
     // Real wire-up calls POST /v1/quotations with the form payload.

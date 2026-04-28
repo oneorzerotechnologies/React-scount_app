@@ -111,16 +111,21 @@ export default function QuotationDetailScreen() {
         <View style={[styles.card, styles.lineItems, { backgroundColor: palette.surface, borderColor: palette.border }]}>
           {quote.line_items.map((li, i) => (
             <View
-              key={`${li.description}-${i}`}
+              key={`${li.name}-${i}`}
               style={[
                 styles.lineRow,
                 i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: palette.border },
               ]}
             >
               <View style={{ flex: 1 }}>
-                <Text style={[styles.lineDesc, { color: palette.text }]} numberOfLines={1}>
-                  {li.description}
+                <Text style={[styles.lineName, { color: palette.text }]} numberOfLines={1}>
+                  {li.name}
                 </Text>
+                {li.description && (
+                  <Text style={[styles.lineDesc, { color: palette.textMuted }]} numberOfLines={2}>
+                    {li.description}
+                  </Text>
+                )}
                 <Text style={[styles.lineMeta, { color: palette.textMuted }]}>
                   {li.quantity} × {formatMoneyCompact(li.unit_price_minor, quote.currency)}
                   {li.tax_code && ` · ${li.tax_code === 'SST6' ? 'SST 6%' : li.tax_code}`}
@@ -253,9 +258,10 @@ const styles = StyleSheet.create({
   contactEmail:      { fontSize: 11, marginTop: 1 },
 
   lineItems: { flexDirection: 'column', alignItems: 'stretch', padding: 0 },
-  lineRow:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 },
-  lineDesc:  { fontSize: 12, fontWeight: '600' },
-  lineMeta:  { fontSize: 10, marginTop: 1 },
+  lineRow:   { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 12, paddingVertical: 10 },
+  lineName:  { fontSize: 13, fontWeight: '700' },
+  lineDesc:  { fontSize: 11, marginTop: 1 },
+  lineMeta:  { fontSize: 10, marginTop: 2 },
   lineAmount:{ fontSize: 13, fontWeight: '700', marginLeft: 8 },
 
   datesRow:  { flexDirection: 'row', gap: 8, marginTop: 8 },

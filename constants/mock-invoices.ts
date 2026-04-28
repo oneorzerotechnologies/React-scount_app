@@ -16,7 +16,7 @@ export const MOCK_INVOICES: Invoice[] = [
     total_minor:          620_000,
     paid_minor:           0,
     line_items: [
-      { description: 'Equipment maintenance · Q1', quantity: 1, unit_price_minor: 584_906, tax_code: 'SST6', line_total_minor: 620_000 },
+      { name: 'Equipment maintenance', description: 'Q1 service contract', quantity: 1, unit_price_minor: 584_906, tax_code: 'SST6', line_total_minor: 620_000 },
     ],
     payments:             [],
     terms_and_conditions: 'Net 30. 1.5% per month on overdue balances.',
@@ -52,8 +52,8 @@ export const MOCK_INVOICES: Invoice[] = [
     total_minor:          872_000,
     paid_minor:           0,
     line_items: [
-      { description: 'Site survey',          quantity: 1, unit_price_minor: 500_000, tax_code: 'SST6', line_total_minor: 530_000 },
-      { description: 'Drafting hours',       quantity: 8, unit_price_minor:  40_000, tax_code: 'SST6', line_total_minor: 339_200 },
+      { name: 'Site survey',     description: 'Q2 portfolio · 4 properties',     quantity: 1, unit_price_minor: 500_000, tax_code: 'SST6', line_total_minor: 530_000 },
+      { name: 'Drafting hours',  description: null,                               quantity: 8, unit_price_minor:  40_000, tax_code: 'SST6', line_total_minor: 339_200 },
     ],
     payments:             [],
     terms_and_conditions: 'Net 30.',
@@ -78,9 +78,9 @@ export const MOCK_INVOICES: Invoice[] = [
     total_minor:          1_240_000,
     paid_minor:           1_240_000,
     line_items: [
-      { description: 'Audit retainer · April',  quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 848_000 },
-      { description: 'Onboarding workshop',     quantity: 4, unit_price_minor:  50_000, tax_code: null,   line_total_minor: 200_000 },
-      { description: 'Setup fee',               quantity: 1, unit_price_minor: 180_000, tax_code: 'SST6', line_total_minor: 190_800 },
+      { name: 'Audit retainer',     description: 'April retainer · scope per SOW', quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 848_000 },
+      { name: 'Onboarding workshop',description: '4 sessions × 90 min',            quantity: 4, unit_price_minor:  50_000, tax_code: null,   line_total_minor: 200_000 },
+      { name: 'Setup fee',          description: 'One-time engagement setup',      quantity: 1, unit_price_minor: 180_000, tax_code: 'SST6', line_total_minor: 190_800 },
     ],
     payments: [
       { id: 'p_1', amount_minor: 1_240_000, currency: 'MYR', method: 'Bank transfer', recorded_at: '2026-04-26T08:14:00Z', reference: 'PT-2604-A' },
@@ -107,7 +107,7 @@ export const MOCK_INVOICES: Invoice[] = [
     total_minor:          340_000,
     paid_minor:           0,
     line_items: [
-      { description: 'Discovery workshop', quantity: 1, unit_price_minor: 320_754, tax_code: 'SST6', line_total_minor: 340_000 },
+      { name: 'Discovery workshop', description: 'Half-day stakeholder workshop', quantity: 1, unit_price_minor: 320_754, tax_code: 'SST6', line_total_minor: 340_000 },
     ],
     payments:             [],
     terms_and_conditions: 'Net 30.',
