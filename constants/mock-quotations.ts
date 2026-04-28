@@ -1,12 +1,12 @@
-import type { QuotationSummary } from '@/types/api';
+import type { Quotation } from '@/types/api';
 
 /**
- * Hand-authored fixtures matching mockups/quotation.html so the screen
- * renders something believable before the backend is up. Will be
- * replaced by `useQuotationList()` against /v1/quotations once the
- * Sanctum auth + axios client land.
+ * Hand-authored fixtures matching mockups/quotation.html so the screens
+ * render something believable before the backend is up. Will be
+ * replaced by `useQuotationList()` / `useQuotation(id)` against
+ * /v1/quotations once the Sanctum auth + axios client land.
  */
-export const MOCK_QUOTATIONS: QuotationSummary[] = [
+export const MOCK_QUOTATIONS: Quotation[] = [
   {
     id:           'qt_038',
     ref:          'QT-038',
@@ -14,8 +14,21 @@ export const MOCK_QUOTATIONS: QuotationSummary[] = [
     issue_date:   '2026-04-25',
     expires_at:   '2026-05-25',
     contact_name: 'CityWorks Sdn Bhd',
-    total_minor:  872000,
-    currency:     'MYR',
+    contact:      { id: 'c_city', name: 'CityWorks Sdn Bhd', email: 'accounts@cityworks.example' },
+    delivery_days:        30,
+    currency:             'MYR',
+    subtotal_minor:       822_641,
+    tax_minor:            49_359,
+    total_minor:          872_000,
+    line_items: [
+      { description: 'Site survey · Q2 portfolio',  quantity: 1,  unit_price_minor: 500_000, tax_code: 'SST6', line_total_minor: 530_000 },
+      { description: 'Drafting hours',              quantity: 8,  unit_price_minor:  40_000, tax_code: 'SST6', line_total_minor: 339_200 },
+    ],
+    terms_and_conditions: 'Net 30 from acceptance. 50% deposit on signing.',
+    remarks:              'Please confirm by 30 Apr.',
+    internal_remarks:     null,
+    linked_invoice:       null,
+    share_url:            'https://scount.my/q/abc-038',
   },
   {
     id:           'qt_037',
@@ -24,8 +37,21 @@ export const MOCK_QUOTATIONS: QuotationSummary[] = [
     issue_date:   '2026-04-22',
     expires_at:   '2026-05-22',
     contact_name: 'Borneo Coffee Co.',
-    total_minor:  2460000,
-    currency:     'MYR',
+    contact:      { id: 'c_borneo', name: 'Borneo Coffee Co.', email: 'finance@borneo.example' },
+    delivery_days:        30,
+    currency:             'MYR',
+    subtotal_minor:       2_320_754,
+    tax_minor:            139_246,
+    total_minor:          2_460_000,
+    line_items: [
+      { description: 'Audit retainer · Q2',         quantity: 1, unit_price_minor: 1_800_000, tax_code: 'SST6', line_total_minor: 1_908_000 },
+      { description: 'Compliance workshop',         quantity: 4, unit_price_minor:    130_000, tax_code: 'SST6', line_total_minor: 551_200 },
+    ],
+    terms_and_conditions: 'Net 30 from acceptance.',
+    remarks:              null,
+    internal_remarks:     'New logo — quote priced 5% under list to win the relationship.',
+    linked_invoice:       null,
+    share_url:            'https://scount.my/q/abc-037',
   },
   {
     id:           'qt_036',
@@ -34,8 +60,22 @@ export const MOCK_QUOTATIONS: QuotationSummary[] = [
     issue_date:   '2026-04-22',
     expires_at:   '2026-05-22',
     contact_name: 'PT Anugerah',
-    total_minor:  1240000,
-    currency:     'MYR',
+    contact:      { id: 'c_anugerah', name: 'PT Anugerah Sdn Bhd', email: 'billing@anugerah.example' },
+    delivery_days:        30,
+    currency:             'MYR',
+    subtotal_minor:       1_169_800,
+    tax_minor:            70_200,
+    total_minor:          1_240_000,
+    line_items: [
+      { description: 'Audit retainer · April',  quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 848_000 },
+      { description: 'Onboarding workshop',     quantity: 4, unit_price_minor:  50_000, tax_code: null,   line_total_minor: 200_000 },
+      { description: 'Setup fee',               quantity: 1, unit_price_minor: 180_000, tax_code: 'SST6', line_total_minor: 190_800 },
+    ],
+    terms_and_conditions: 'Net 30 from acceptance. 50% non-refundable deposit upon signing.',
+    remarks:              'Please confirm by 30 Apr.',
+    internal_remarks:     'Margin 40% — repeat client.',
+    linked_invoice:       null,
+    share_url:            'https://scount.my/q/abc-036',
   },
   {
     id:           'qt_034',
@@ -44,8 +84,20 @@ export const MOCK_QUOTATIONS: QuotationSummary[] = [
     issue_date:   '2026-04-12',
     expires_at:   '2026-05-12',
     contact_name: 'Pesisir Marine',
-    total_minor:  680000,
-    currency:     'MYR',
+    contact:      { id: 'c_pesisir', name: 'Pesisir Marine Sdn Bhd', email: 'ap@pesisir.example' },
+    delivery_days:        45,
+    currency:             'MYR',
+    subtotal_minor:       641_509,
+    tax_minor:            38_491,
+    total_minor:          680_000,
+    line_items: [
+      { description: 'Marine equipment audit',      quantity: 1, unit_price_minor: 641_509, tax_code: 'SST6', line_total_minor: 680_000 },
+    ],
+    terms_and_conditions: 'Net 45.',
+    remarks:              null,
+    internal_remarks:     'Lost on price — competitor came in 18% lower.',
+    linked_invoice:       null,
+    share_url:            'https://scount.my/q/abc-034',
   },
   {
     id:           'qt_031',
@@ -54,7 +106,19 @@ export const MOCK_QUOTATIONS: QuotationSummary[] = [
     issue_date:   '2026-03-15',
     expires_at:   '2026-04-15',
     contact_name: 'Acme Sdn Bhd',
-    total_minor:  520000,
-    currency:     'MYR',
+    contact:      { id: 'c_acme', name: 'Acme Sdn Bhd', email: 'finance@acme.example' },
+    delivery_days:        30,
+    currency:             'MYR',
+    subtotal_minor:       490_566,
+    tax_minor:            29_434,
+    total_minor:          520_000,
+    line_items: [
+      { description: 'Setup retainer',  quantity: 1, unit_price_minor: 490_566, tax_code: 'SST6', line_total_minor: 520_000 },
+    ],
+    terms_and_conditions: 'Net 30.',
+    remarks:              null,
+    internal_remarks:     null,
+    linked_invoice:       null,
+    share_url:            'https://scount.my/q/abc-031',
   },
 ];

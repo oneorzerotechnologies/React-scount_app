@@ -27,6 +27,10 @@ const MAPPING = {
   'plus': 'add',
   'magnifyingglass': 'search',
   'chevron.left': 'chevron-left',
+  'pencil': 'edit',
+  'square.and.arrow.up': 'ios-share',
+  'arrow.right': 'arrow-forward',
+  'info.circle': 'info-outline',
 } as IconMapping;
 
 /**
