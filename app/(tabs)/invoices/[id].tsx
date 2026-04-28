@@ -167,7 +167,6 @@ export default function InvoiceDetailScreen() {
                 )}
                 <Text style={[styles.lineMeta, { color: palette.textMuted }]}>
                   {li.quantity} × {formatMoneyCompact(li.unit_price_minor, inv.currency)}
-                  {li.tax_code && ` · ${li.tax_code === 'SST6' ? 'SST 6%' : li.tax_code}`}
                 </Text>
               </View>
               <Text style={[styles.lineAmount, { color: palette.text }]}>

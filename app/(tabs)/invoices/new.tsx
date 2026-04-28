@@ -35,14 +35,23 @@ export default function NewInvoiceScreen() {
   const [pickerOpen,   setPickerOpen]   = useState(false);
   const [contact,      setContact]      = useState<Contact | null>(MOCK_CONTACTS[0]);
   const [items,        setItems]        = useState<LineItem[]>([
-    { name: 'Audit retainer', description: 'April retainer · scope per SOW', quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 848_000 },
+    { name: 'Audit retainer', description: 'April retainer · scope per SOW', quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 800_000 },
   ]);
+  const [taxEnabled,   setTaxEnabled]   = useState(true);
   const [terms,        setTerms]        = useState('Net 30. 1.5% per month on overdue balances.');
   const [remarks,      setRemarks]      = useState('Bank-in to MBB 5142-***-***.');
   const [internalNote, setInternalNote] = useState('');
 
-  const total = items.reduce((sum, li) => sum + li.line_total_minor, 0);
-  const canSave = !!contact && items.length > 0 && items.every((li) => li.name.trim().length > 0);
+  const subtotal = items.reduce((sum, li) => sum + li.line_total_minor, 0);
+  const tax      = taxEnabled ? Math.round(subtotal * 0.06) : 0;
+  const total    = subtotal + tax;
+  const canSave  = !!contact && items.length > 0 && items.every((li) => li.name.trim().length > 0);
+
+  const toggleTax = () => {
+    const next = !taxEnabled;
+    setTaxEnabled(next);
+    setItems(items.map((li) => ({ ...li, tax_code: next ? 'SST6' : null })));
+  };
 
   const onSave = () => {
     // eslint-disable-next-line no-console
@@ -104,8 +113,38 @@ export default function NewInvoiceScreen() {
               items={items}
               onChange={setItems}
               currency="MYR"
-              defaultTaxCode="SST6"
+              defaultTaxCode={taxEnabled ? 'SST6' : null}
             />
+          </Section>
+
+          <Section label="Tax" palette={palette}>
+            <Pressable
+              onPress={toggleTax}
+              style={({ pressed }) => [
+                styles.taxRow,
+                { backgroundColor: palette.surface, borderColor: taxEnabled ? moss[400] : palette.border },
+                pressed && { opacity: 0.85 },
+              ]}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.taxName, { color: palette.text }]}>SST 6%</Text>
+                <Text style={[styles.taxHint, { color: palette.textMuted }]}>
+                  Applied to subtotal. Toggle off for tax-exempt sales.
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.taxPill,
+                  taxEnabled
+                    ? { backgroundColor: moss[500], borderColor: moss[500] }
+                    : { backgroundColor: 'transparent', borderColor: palette.border },
+                ]}
+              >
+                <Text style={[styles.taxPillText, { color: taxEnabled ? '#fff' : palette.textMuted }]}>
+                  {taxEnabled ? 'ON' : 'OFF'}
+                </Text>
+              </View>
+            </Pressable>
           </Section>
 
           <Section label="Terms & conditions" palette={palette}>
@@ -155,6 +194,10 @@ export default function NewInvoiceScreen() {
             <Text style={[styles.totalLabel, { color: palette.textMuted }]}>TOTAL · MYR</Text>
             <Text style={[styles.totalAmount, { color: palette.text }]}>
               {formatMoneyCompact(total, 'MYR')}
+            </Text>
+            <Text style={[styles.totalBreak, { color: palette.textMuted }]}>
+              Subtotal {formatMoneyCompact(subtotal, 'MYR')}
+              {taxEnabled && ` · Tax ${formatMoneyCompact(tax, 'MYR')}`}
             </Text>
           </View>
           <Pressable
@@ -282,6 +325,20 @@ const styles = StyleSheet.create({
   },
   totalLabel:  { fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
   totalAmount: { fontSize: 18, fontWeight: '800', letterSpacing: -0.4 },
+  totalBreak:  { fontSize: 10, marginTop: 1 },
+
+  taxRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    borderWidth: 2, borderRadius: 12,
+    paddingHorizontal: 12, paddingVertical: 10,
+  },
+  taxName: { fontSize: 13, fontWeight: '700' },
+  taxHint: { fontSize: 11, marginTop: 1 },
+  taxPill: {
+    borderWidth: 1, borderRadius: 999,
+    paddingHorizontal: 10, paddingVertical: 4,
+  },
+  taxPillText: { fontSize: 10, fontWeight: '800', letterSpacing: 0.6 },
   saveBtn: {
     backgroundColor: moss[500],
     borderRadius: 12,

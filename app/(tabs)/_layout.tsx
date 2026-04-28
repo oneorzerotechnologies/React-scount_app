@@ -35,6 +35,7 @@ export default function TabLayout() {
         options={{
           title: 'Quotation',
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="doc.text.fill" color={color} />,
+          popToTopOnBlur: true,
         }}
       />
       <Tabs.Screen
@@ -42,6 +43,7 @@ export default function TabLayout() {
         options={{
           title: 'Invoice',
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="list.bullet.rectangle.fill" color={color} />,
+          popToTopOnBlur: true,
         }}
       />
       <Tabs.Screen
