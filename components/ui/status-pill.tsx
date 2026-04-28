@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, type TextStyle, type ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 import { moss, slate } from '@/constants/theme';
 
@@ -30,8 +30,8 @@ export function StatusPill({
   textStyle,
 }: {
   status: StatusKind;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }) {
   const p = PALETTES[status];
   return (

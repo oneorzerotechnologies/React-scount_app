@@ -1,16 +1,19 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, moss } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function HomeScreen() {
   const palette = Colors[useColorScheme() ?? 'light'];
+  const router  = useRouter();
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Workspace switcher row */}
+        {/* Workspace switcher + bell row */}
         <View style={styles.headerRow}>
           <View style={styles.workspacePill}>
             <View style={styles.workspaceAvatar}>
@@ -18,8 +21,18 @@ export default function HomeScreen() {
             </View>
             <Text style={[styles.workspaceName, { color: palette.text }]}>Acme Sdn Bhd</Text>
           </View>
-          <View style={styles.profileAvatar}>
-            <Text style={styles.profileAvatarText}>E</Text>
+          <View style={styles.headerRight}>
+            <Pressable
+              onPress={() => router.push('/(tabs)/more/notifications')}
+              hitSlop={6}
+              style={styles.bellBtn}
+            >
+              <IconSymbol name="ellipsis" size={16} color={palette.text} />
+              <View style={styles.bellDot} />
+            </Pressable>
+            <View style={styles.profileAvatar}>
+              <Text style={styles.profileAvatarText}>E</Text>
+            </View>
           </View>
         </View>
 
@@ -66,6 +79,19 @@ const styles = StyleSheet.create({
   workspaceAvatar: { width: 24, height: 24, borderRadius: 6, backgroundColor: moss[500], alignItems: 'center', justifyContent: 'center' },
   workspaceAvatarText: { color: '#fff', fontSize: 11, fontWeight: '700' },
   workspaceName: { fontSize: 13, fontWeight: '600' },
+
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  bellBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+    position: 'relative',
+  },
+  bellDot: {
+    position: 'absolute', top: 6, right: 6,
+    width: 6, height: 6, borderRadius: 3,
+    backgroundColor: moss[500],
+  },
+
   profileAvatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: moss[500], alignItems: 'center', justifyContent: 'center' },
   profileAvatarText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 

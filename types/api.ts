@@ -54,7 +54,99 @@ export type Quotation = QuotationSummary & {
   can_delete?:          boolean;
 };
 
+export type ContactType = 'client' | 'supplier';
+
+export type Contact = {
+  id:                 string;
+  type:               ContactType;
+  name:               string;
+  email:              string | null;
+  phone:              string | null;
+  tax_id:             string | null;
+  address_line1:      string | null;
+  address_city:       string | null;
+  outstanding_minor:  number;
+  invoice_count:      number;
+  quote_count:        number;
+  currency:           string;
+  notes:              string | null;
+};
+
 export type InvoiceStatus = 'draft' | 'sent' | 'partially_paid' | 'paid' | 'overdue';
+
+export type Payment = {
+  id:           string;
+  amount_minor: number;
+  currency:     string;
+  method:       string;
+  recorded_at:  string;
+  reference:    string | null;
+};
+
+export type RecurrenceFrequency = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+
+export type UpcomingCycle = {
+  issue_date:   string;
+  amount_minor: number;
+  currency:     string;
+};
+
+export type Recurrence = {
+  enabled:         boolean;
+  frequency:       RecurrenceFrequency;
+  anchor_day:      number;
+  next_at:         string;
+  ends_at:         string | null;
+  upcoming_cycles: UpcomingCycle[];
+};
+
+export type FromQuotationRef = {
+  id:  string;
+  ref: string;
+};
+
+export type InvoiceSummary = {
+  id:           string;
+  ref:          string;
+  status:       InvoiceStatus;
+  issue_date:   string;
+  due_date:     string;
+  contact_name: string;
+  total_minor:  number;
+  paid_minor:   number;
+  currency:     string;
+};
+
+export type Invoice = InvoiceSummary & {
+  delivery_days:        number | null;
+  contact:              ContactRef;
+  subtotal_minor:       number;
+  tax_minor:            number;
+  line_items:           LineItem[];
+  payments:             Payment[];
+  terms_and_conditions: string | null;
+  remarks:              string | null;
+  internal_remarks:     string | null;
+  recurrence:           Recurrence | null;
+  from_quotation:       FromQuotationRef | null;
+  share_url:            string;
+  can_update?:          boolean;
+  can_delete?:          boolean;
+};
+
+export type NotificationCategory =
+  | 'quote_accepted' | 'quote_viewed' | 'invoice_paid' | 'invoice_overdue' | 'weekly_digest';
+
+export type AppNotification = {
+  id:          string;
+  category:    NotificationCategory;
+  title:       string;
+  body:        string;
+  occurred_at: string;
+  read:        boolean;
+  /** Path to deep-link to on tap. */
+  href?:       string;
+};
 
 export type ResourcePermissions = {
   create: boolean;

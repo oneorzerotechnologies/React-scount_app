@@ -22,12 +22,12 @@ import { formatDateShort } from '@/lib/dates';
 import { formatMoneyCompact } from '@/lib/money';
 import type { Contact, LineItem } from '@/types/api';
 
-export default function NewQuotationScreen() {
+export default function NewInvoiceScreen() {
   const palette = Colors[useColorScheme() ?? 'light'];
   const router  = useRouter();
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
-  const expiresIn30 = useMemo(() => {
+  const dueIn30 = useMemo(() => {
     const d = new Date(); d.setDate(d.getDate() + 30);
     return d.toISOString().slice(0, 10);
   }, []);
@@ -35,20 +35,18 @@ export default function NewQuotationScreen() {
   const [pickerOpen,   setPickerOpen]   = useState(false);
   const [contact,      setContact]      = useState<Contact | null>(MOCK_CONTACTS[0]);
   const [items,        setItems]        = useState<LineItem[]>([
-    { description: 'Consulting · Q2', quantity: 10, unit_price_minor: 50_000, tax_code: null, line_total_minor: 500_000 },
+    { description: 'Audit retainer · April', quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 848_000 },
   ]);
-  const [terms,        setTerms]        = useState('Net 30 from acceptance.');
-  const [remarks,      setRemarks]      = useState('');
+  const [terms,        setTerms]        = useState('Net 30. 1.5% per month on overdue balances.');
+  const [remarks,      setRemarks]      = useState('Bank-in to MBB 5142-***-***.');
   const [internalNote, setInternalNote] = useState('');
 
   const total = items.reduce((sum, li) => sum + li.line_total_minor, 0);
   const canSave = !!contact && items.length > 0 && items.every((li) => li.description.trim().length > 0);
 
   const onSave = () => {
-    // Real wire-up calls POST /v1/quotations with the form payload.
-    // v0: just navigate back.
     // eslint-disable-next-line no-console
-    console.log('Save quote', { contact, items, terms, remarks, internalNote });
+    console.log('Save invoice', { contact, items, terms, remarks, internalNote });
     router.back();
   };
 
@@ -58,19 +56,17 @@ export default function NewQuotationScreen() {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} hitSlop={8}>
             <Text style={[styles.close, { color: palette.text }]}>×</Text>
           </Pressable>
-          <Text style={[styles.title, { color: palette.text }]}>New quote</Text>
+          <Text style={[styles.title, { color: palette.text }]}>New invoice</Text>
           <Pressable onPress={onSave} disabled={!canSave} hitSlop={8}>
             <Text style={[styles.save, { color: canSave ? moss[700] : palette.textMuted }]}>Save</Text>
           </Pressable>
         </View>
 
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          {/* Contact */}
           <Section label="Contact" palette={palette}>
             <Pressable
               onPress={() => setPickerOpen(true)}
@@ -92,14 +88,17 @@ export default function NewQuotationScreen() {
             </Pressable>
           </Section>
 
-          {/* Dates + delivery */}
           <View style={styles.dateGrid}>
-            <DateChip label="Issued"   value={formatDateShort(today)}        palette={palette} />
-            <DateChip label="Expires"  value={formatDateShort(expiresIn30)}  palette={palette} />
-            <DateChip label="Delivery" value="30d"                            palette={palette} />
+            <DateChip label="Issued"   value={formatDateShort(today)}    palette={palette} />
+            <DateChip
+              label="Due"
+              value={formatDateShort(dueIn30)}
+              palette={palette}
+              highlight
+            />
+            <DateChip label="Delivery" value="30d"                       palette={palette} />
           </View>
 
-          {/* Line items */}
           <Section label="Line items" palette={palette}>
             <LineItemEditor
               items={items}
@@ -109,37 +108,28 @@ export default function NewQuotationScreen() {
             />
           </Section>
 
-          {/* Terms */}
           <Section label="Terms & conditions" palette={palette}>
             <TextInput
               value={terms}
               onChangeText={setTerms}
               multiline
-              placeholder="Payment terms, deposit, late fees…"
+              placeholder="Payment terms, late fees, recurrence note…"
               placeholderTextColor={slate[400]}
-              style={[
-                styles.textarea,
-                { color: palette.text, backgroundColor: palette.surface, borderColor: palette.border },
-              ]}
+              style={[styles.textarea, { color: palette.text, backgroundColor: palette.surface, borderColor: palette.border }]}
             />
           </Section>
 
-          {/* Remarks */}
           <Section label="Remarks" palette={palette}>
             <TextInput
               value={remarks}
               onChangeText={setRemarks}
               multiline
-              placeholder="Visible on the PDF the customer sees."
+              placeholder="Visible on the customer PDF."
               placeholderTextColor={slate[400]}
-              style={[
-                styles.textarea,
-                { color: palette.text, backgroundColor: palette.surface, borderColor: palette.border },
-              ]}
+              style={[styles.textarea, { color: palette.text, backgroundColor: palette.surface, borderColor: palette.border }]}
             />
           </Section>
 
-          {/* Internal remarks */}
           <Section
             label="Internal remarks"
             palette={palette}
@@ -155,16 +145,11 @@ export default function NewQuotationScreen() {
               multiline
               placeholder="Notes only your workspace can see."
               placeholderTextColor={slate[400]}
-              style={[
-                styles.textarea,
-                styles.textareaPrivate,
-                { color: palette.text },
-              ]}
+              style={[styles.textarea, styles.textareaPrivate, { color: palette.text }]}
             />
           </Section>
         </ScrollView>
 
-        {/* Total bar */}
         <View style={[styles.totalBar, { backgroundColor: palette.surface, borderTopColor: palette.border }]}>
           <View>
             <Text style={[styles.totalLabel, { color: palette.textMuted }]}>TOTAL · MYR</Text>
@@ -180,7 +165,7 @@ export default function NewQuotationScreen() {
               { opacity: canSave ? (pressed ? 0.85 : 1) : 0.5 },
             ]}
           >
-            <Text style={styles.saveBtnText}>Save quote</Text>
+            <Text style={styles.saveBtnText}>Save & send</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -218,14 +203,24 @@ function Section({
 }
 
 function DateChip({
-  label, value, palette,
+  label, value, palette, highlight,
 }: {
   label: string;
   value: string;
   palette: typeof Colors.light | typeof Colors.dark;
+  highlight?: boolean;
 }) {
   return (
-    <View style={[styles.dateChip, { backgroundColor: palette.surface, borderColor: palette.border }]}>
+    <View
+      style={[
+        styles.dateChip,
+        {
+          backgroundColor: palette.surface,
+          borderColor: highlight ? moss[400] : palette.border,
+          borderWidth: highlight ? 2 : 1,
+        },
+      ]}
+    >
       <Text style={[styles.dateLabel, { color: palette.textMuted }]}>{label.toUpperCase()}</Text>
       <Text style={[styles.dateValue, { color: palette.text }]}>{value}</Text>
     </View>
@@ -259,7 +254,7 @@ const styles = StyleSheet.create({
   contactName: { flex: 1, fontSize: 13, fontWeight: '600' },
 
   dateGrid: { flexDirection: 'row', gap: 8, marginTop: 12 },
-  dateChip: { flex: 1, borderWidth: 1, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8 },
+  dateChip: { flex: 1, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8 },
   dateLabel:{ fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
   dateValue:{ fontSize: 13, fontWeight: '700', marginTop: 2 },
 
@@ -271,21 +266,13 @@ const styles = StyleSheet.create({
   },
   textareaPrivate: {
     backgroundColor: 'rgba(254,243,199,0.4)',
+    borderWidth: 1,
     borderColor: '#FDE68A',
   },
 
-  privateBadge: {
-    backgroundColor: '#FEF3C7',
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-    borderRadius: 3,
-  },
+  privateBadge: { backgroundColor: '#FEF3C7', paddingHorizontal: 5, paddingVertical: 1, borderRadius: 3 },
   privateBadgeText: {
-    color: '#B45309',
-    fontSize: 7,
-    fontWeight: '800',
-    letterSpacing: 0.6,
-    fontFamily: 'ui-monospace',
+    color: '#B45309', fontSize: 7, fontWeight: '800', letterSpacing: 0.6, fontFamily: 'ui-monospace',
   },
 
   totalBar: {
@@ -299,10 +286,7 @@ const styles = StyleSheet.create({
     backgroundColor: moss[500],
     borderRadius: 12,
     paddingHorizontal: 18, paddingVertical: 10,
-    shadowColor: moss[700],
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 14,
+    shadowColor: moss[700], shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 14,
   },
   saveBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 });
