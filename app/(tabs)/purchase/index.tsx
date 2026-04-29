@@ -114,10 +114,11 @@ function ExpenseRow({
           <Text style={[styles.rowRef, { color: palette.textMuted }]}>{expense.ref}</Text>
         </View>
         <Text style={[styles.rowName, { color: palette.text }]} numberOfLines={1}>
-          {expense.description ?? expense.category.name}
+          {expense.category ?? expense.account.name}
         </Text>
         <Text style={[styles.rowMeta, { color: palette.textMuted }]} numberOfLines={1}>
-          {formatDateShort(expense.date)} · {expense.category.name} · {expense.paid_from.name}
+          {formatDateShort(expense.date)} · {expense.account.name}
+          {expense.paid_from && ` · ${expense.paid_from.name}`}
         </Text>
       </View>
       <Text style={[styles.rowAmount, { color: palette.text }]}>
@@ -151,10 +152,10 @@ function IncomeRow({
           <Text style={[styles.rowRef, { color: palette.textMuted }]}>{income.ref}</Text>
         </View>
         <Text style={[styles.rowName, { color: palette.text }]} numberOfLines={1}>
-          {income.description ?? income.category.name}
+          {income.category ?? income.account.name}
         </Text>
         <Text style={[styles.rowMeta, { color: palette.textMuted }]} numberOfLines={1}>
-          {formatDateShort(income.date)} · {income.category.name}
+          {formatDateShort(income.date)} · {income.account.name}
         </Text>
       </View>
       <Text style={[styles.rowAmount, { color: moss[700] }]}>

@@ -3,11 +3,11 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { ThemeModeProvider } from '@/contexts/theme-mode';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export default function RootLayout() {
+function RootStack() {
   const colorScheme = useColorScheme();
-
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
@@ -17,5 +17,13 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeModeProvider>
+      <RootStack />
+    </ThemeModeProvider>
   );
 }

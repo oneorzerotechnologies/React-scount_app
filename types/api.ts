@@ -182,25 +182,38 @@ export type ResourcePermissions = {
   delete: boolean;
 };
 
-export type PaymentOption = 'cash' | 'bank' | 'card' | 'cheque' | 'online';
+/** Mirrors the web select on accounting forms. Stored as plain string. */
+export type PaymentOption =
+  | 'Cash' | 'Bank Transfer' | 'Cheque' | 'Credit Card' | 'Online Payment' | 'Other';
 
+export type ChartAccountType = 'income' | 'expense' | 'asset' | 'liability';
+
+/** Chart-of-accounts entry — the formal accounting category. */
+export type ChartAccount = {
+  id:   string;
+  code: string;
+  name: string;
+  type: ChartAccountType;
+};
+
+export type CashAccountGroup = 'Cash' | 'Bank' | 'Credit Card' | 'E-Wallet';
+
+/** Cash / bank / credit-card / e-wallet — the "Paid From" pickers. */
 export type CashAccount = {
-  id:   string;
-  name: string;
-  type: 'cash' | 'bank';
+  id:     string;
+  name:   string;
+  group:  CashAccountGroup;
+  /** Bank or card issuer for nicer labels. */
+  issuer: string | null;
+  code:   string | null;
 };
 
-export type ExpenseCategory = {
-  id:   string;
-  name: string;
-  /** Chart-of-accounts code on the web side. */
-  code: string;
-};
-
-export type IncomeCategory = {
-  id:   string;
-  name: string;
-  code: string;
+/** Tax rate row from /accounting/taxes — mirrors web Tax model. */
+export type TaxRate = {
+  id:           string;
+  display_name: string;
+  rate:         number;
+  type:         'percentage' | 'fixed';
 };
 
 /**
@@ -211,15 +224,19 @@ export type Expense = {
   id:                string;
   ref:               string;
   date:              string;
+  /** Free-text category, e.g. "Office Supplies". Web uses this for the
+   *  human-readable label; the chart account is the formal posting. */
+  category:          string | null;
+  account:           ChartAccount;
+  paid_from:         CashAccount | null;
+  payment_option:    PaymentOption;
+  contact:           ContactRef | null;
   amount_minor:      number;
+  tax_rate:          TaxRate | null;
   tax_minor:         number;
   total_minor:       number;
   currency:          string;
-  category:          ExpenseCategory;
-  paid_from:         CashAccount;
-  payment_option:    PaymentOption;
-  contact:           ContactRef | null;
-  description:       string | null;
+  description:       string;
   internal_remark:   string | null;
   reconciled:        boolean;
   share_url:         string;
@@ -233,13 +250,15 @@ export type IncomeEntry = {
   id:                string;
   ref:               string;
   date:              string;
+  category:          string | null;
+  account:           ChartAccount;
+  payment_option:    PaymentOption;
+  contact:           ContactRef | null;
   amount_minor:      number;
+  tax_rate:          TaxRate | null;
   tax_minor:         number;
   total_minor:       number;
   currency:          string;
-  category:          IncomeCategory;
-  payment_option:    PaymentOption;
-  contact:           ContactRef | null;
   description:       string | null;
   internal_remark:   string | null;
   reconciled:        boolean;

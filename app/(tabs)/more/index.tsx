@@ -2,16 +2,26 @@ import { useRouter } from 'expo-router';
 import { Linking, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { OptionPicker } from '@/components/shared/option-picker';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, moss, slate } from '@/constants/theme';
+import { useThemeMode, type ThemeMode } from '@/contexts/theme-mode';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useState } from 'react';
+
+const APPEARANCE_LABELS: Record<ThemeMode, string> = {
+  light:  'Light',
+  dark:   'Dark',
+  system: 'System',
+};
 
 export default function MoreScreen() {
   const palette = Colors[useColorScheme() ?? 'light'];
   const router  = useRouter();
 
-  const [biometric, setBiometric] = useState(true);
+  const [biometric, setBiometric]         = useState(true);
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const { mode, setMode } = useThemeMode();
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['top']}>
@@ -20,6 +30,7 @@ export default function MoreScreen() {
 
         {/* Profile card */}
         <Pressable
+          onPress={() => router.push('/(tabs)/more/profile')}
           style={({ pressed }) => [
             styles.row, styles.bigRow,
             { backgroundColor: palette.surface, borderColor: palette.border },
@@ -43,6 +54,7 @@ export default function MoreScreen() {
 
         {/* Workspace card */}
         <Pressable
+          onPress={() => router.push('/(tabs)/more/workspaces')}
           style={({ pressed }) => [
             styles.row,
             { backgroundColor: palette.surface, borderColor: palette.border },
@@ -74,10 +86,13 @@ export default function MoreScreen() {
                 thumbColor="#fff"
               />
             </View>
-            <Pressable style={({ pressed }) => [styles.itemRow, styles.itemDivider, { borderTopColor: palette.border }, pressed && { opacity: 0.7 }]}>
+            <Pressable
+              onPress={() => setAppearanceOpen(true)}
+              style={({ pressed }) => [styles.itemRow, styles.itemDivider, { borderTopColor: palette.border }, pressed && { opacity: 0.7 }]}
+            >
               <View style={styles.iconHolder}><IconSymbol name="info.circle" size={14} color={slate[500]} /></View>
               <Text style={[styles.itemLabel, { color: palette.text }]}>Appearance</Text>
-              <Text style={[styles.itemValue, { color: palette.textMuted }]}>System</Text>
+              <Text style={[styles.itemValue, { color: palette.textMuted }]}>{APPEARANCE_LABELS[mode]}</Text>
               <IconSymbol name="chevron.right" size={12} color={palette.textMuted as string} />
             </Pressable>
             <Pressable
@@ -95,12 +110,18 @@ export default function MoreScreen() {
         {/* Support */}
         <Section label="Support" palette={palette}>
           <View style={[styles.group, { backgroundColor: palette.surface, borderColor: palette.border }]}>
-            <Pressable style={({ pressed }) => [styles.itemRow, pressed && { opacity: 0.7 }]}>
+            <Pressable
+              onPress={() => Linking.openURL('https://scount.my/help')}
+              style={({ pressed }) => [styles.itemRow, pressed && { opacity: 0.7 }]}
+            >
               <View style={styles.iconHolder}><IconSymbol name="info.circle" size={14} color={slate[500]} /></View>
               <Text style={[styles.itemLabel, { color: palette.text }]}>Help &amp; FAQ</Text>
               <IconSymbol name="chevron.right" size={12} color={palette.textMuted as string} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.itemRow, styles.itemDivider, { borderTopColor: palette.border }, pressed && { opacity: 0.7 }]}>
+            <Pressable
+              onPress={() => Linking.openURL('mailto:support@scount.my?subject=scount.my%20mobile%20feedback')}
+              style={({ pressed }) => [styles.itemRow, styles.itemDivider, { borderTopColor: palette.border }, pressed && { opacity: 0.7 }]}
+            >
               <View style={styles.iconHolder}><IconSymbol name="info.circle" size={14} color={slate[500]} /></View>
               <Text style={[styles.itemLabel, { color: palette.text }]}>Send feedback</Text>
               <IconSymbol name="chevron.right" size={12} color={palette.textMuted as string} />
@@ -139,6 +160,20 @@ export default function MoreScreen() {
           scount.my mobile · v1.0.0 · build 142
         </Text>
       </ScrollView>
+
+      <OptionPicker<ThemeMode>
+        visible={appearanceOpen}
+        title="Appearance"
+        subtitle="Override system theme"
+        options={[
+          { value: 'system', label: 'System', sublabel: 'Match device setting' },
+          { value: 'light',  label: 'Light' },
+          { value: 'dark',   label: 'Dark'  },
+        ]}
+        selected={mode}
+        onSelect={(v) => { setMode(v); setAppearanceOpen(false); }}
+        onClose={() => setAppearanceOpen(false)}
+      />
     </SafeAreaView>
   );
 }

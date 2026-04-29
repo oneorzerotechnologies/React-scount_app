@@ -40,6 +40,13 @@ const MAPPING = {
   'banknote.fill': 'payments',
   'arrow.down.circle.fill': 'add-circle',
   'checkmark': 'check',
+  // attachments
+  'paperclip': 'attach-file',
+  'camera.fill': 'photo-camera',
+  'photo.fill': 'photo',
+  'doc.fill': 'insert-drive-file',
+  'arrow.up.circle': 'file-upload',
+  'xmark': 'close',
 } as IconMapping;
 
 /**

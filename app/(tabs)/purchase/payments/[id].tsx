@@ -28,7 +28,7 @@ export default function ExpenseDetailScreen() {
 
   const onShare = async () => {
     try {
-      await Share.share({ url: e.share_url, message: `${e.ref} · ${e.category.name}` });
+      await Share.share({ url: e.share_url, message: `${e.ref} · ${e.account.name}` });
     } catch { /* cancelled */ }
   };
 
@@ -71,11 +71,17 @@ export default function ExpenseDetailScreen() {
 
         <View style={[styles.card, { backgroundColor: palette.surface, borderColor: palette.border }]}>
           <KV label="Date"     value={formatDateFull(e.date)} palette={palette} />
-          <KV label="Category" value={`${e.category.name} (${e.category.code})`} palette={palette} divider />
-          <KV label="Paid from"value={`${e.paid_from.name} · ${e.paid_from.type.toUpperCase()}`} palette={palette} divider />
-          <KV label="Method"   value={e.payment_option.toUpperCase()} palette={palette} divider />
+          {e.category && <KV label="Category" value={e.category} palette={palette} divider />}
+          <KV label="Account"  value={`${e.account.code} — ${e.account.name}`} palette={palette} divider />
+          {e.paid_from && (
+            <KV label="Paid from" value={`${e.paid_from.name} · ${e.paid_from.group}`} palette={palette} divider />
+          )}
+          <KV label="Method"   value={e.payment_option} palette={palette} divider />
           {e.contact && <KV label="Supplier" value={e.contact.name} palette={palette} divider />}
-          {e.description && <KV label="Note" value={e.description} palette={palette} divider />}
+          {e.tax_rate && (
+            <KV label="Tax" value={`${e.tax_rate.display_name} · ${formatMoneyCompact(e.tax_minor, e.currency)}`} palette={palette} divider />
+          )}
+          {e.description.length > 0 && <KV label="Note" value={e.description} palette={palette} divider />}
         </View>
 
         {e.internal_remark && (

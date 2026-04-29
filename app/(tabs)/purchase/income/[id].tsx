@@ -28,7 +28,7 @@ export default function IncomeDetailScreen() {
 
   const onShare = async () => {
     try {
-      await Share.share({ url: inc.share_url, message: `${inc.ref} · ${inc.category.name}` });
+      await Share.share({ url: inc.share_url, message: `${inc.ref} · ${inc.account.name}` });
     } catch { /* cancelled */ }
   };
 
@@ -71,9 +71,13 @@ export default function IncomeDetailScreen() {
 
         <View style={[styles.card, { backgroundColor: palette.surface, borderColor: palette.border }]}>
           <KV label="Date"     value={formatDateFull(inc.date)} palette={palette} />
-          <KV label="Category" value={`${inc.category.name} (${inc.category.code})`} palette={palette} divider />
-          <KV label="Method"   value={inc.payment_option.toUpperCase()} palette={palette} divider />
+          {inc.category && <KV label="Category" value={inc.category} palette={palette} divider />}
+          <KV label="Account"  value={`${inc.account.code} — ${inc.account.name}`} palette={palette} divider />
+          <KV label="Method"   value={inc.payment_option} palette={palette} divider />
           {inc.contact && <KV label="From" value={inc.contact.name} palette={palette} divider />}
+          {inc.tax_rate && (
+            <KV label="Tax" value={`${inc.tax_rate.display_name} · ${formatMoneyCompact(inc.tax_minor, inc.currency)}`} palette={palette} divider />
+          )}
           {inc.description && <KV label="Note" value={inc.description} palette={palette} divider />}
         </View>
 
