@@ -78,7 +78,7 @@ export function UpcomingCyclesCard({ recurrence }: { recurrence: Recurrence }) {
               key={c.id}
               cycle={c}
               frequency={recurrence.frequency}
-              onPress={() => router.push(`/(tabs)/invoices/${c.id}`)}
+              onPress={() => router.push(`/(tabs)/sales/invoices/${c.id}`)}
               palette={palette}
             />
           ))}

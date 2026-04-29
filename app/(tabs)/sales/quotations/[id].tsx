@@ -60,7 +60,7 @@ export default function QuotationDetailScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Pressable
-          onPress={() => router.replace('/(tabs)/quotations')}
+          onPress={() => router.replace('/(tabs)/sales')}
           hitSlop={20}
           style={styles.iconBtn}
         >
@@ -72,7 +72,7 @@ export default function QuotationDetailScreen() {
         <View style={styles.headerRight}>
           {!isReadOnly && (
             <Pressable
-              onPress={() => router.push('/(tabs)/quotations/new')}
+              onPress={() => router.push('/(tabs)/sales/quotations/new')}
               hitSlop={6}
               style={styles.iconBtn}
             >
@@ -172,7 +172,7 @@ export default function QuotationDetailScreen() {
         {/* Linked invoice (if converted) */}
         {quote.linked_invoice && (
           <Pressable
-            onPress={() => router.push(`/(tabs)/invoices`)}
+            onPress={() => router.push('/(tabs)/sales')}
             style={[styles.linkedCard, { borderColor: palette.border, backgroundColor: palette.surface }]}
           >
             <Text style={[styles.linkedLabel, { color: palette.textMuted }]}>CONVERTED TO</Text>

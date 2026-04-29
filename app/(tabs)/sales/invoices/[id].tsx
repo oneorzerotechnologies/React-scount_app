@@ -58,7 +58,7 @@ export default function InvoiceDetailScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Pressable
-          onPress={() => router.replace('/(tabs)/invoices')}
+          onPress={() => router.replace('/(tabs)/sales')}
           hitSlop={20}
           style={styles.iconBtn}
         >
@@ -68,7 +68,7 @@ export default function InvoiceDetailScreen() {
         <View style={styles.headerRight}>
           {!isReadOnly && (
             <Pressable
-              onPress={() => router.push('/(tabs)/invoices/new')}
+              onPress={() => router.push('/(tabs)/sales/invoices/new')}
               hitSlop={6}
               style={styles.iconBtn}
             >

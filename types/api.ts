@@ -181,3 +181,67 @@ export type ResourcePermissions = {
   update: boolean;
   delete: boolean;
 };
+
+export type PaymentOption = 'cash' | 'bank' | 'card' | 'cheque' | 'online';
+
+export type CashAccount = {
+  id:   string;
+  name: string;
+  type: 'cash' | 'bank';
+};
+
+export type ExpenseCategory = {
+  id:   string;
+  name: string;
+  /** Chart-of-accounts code on the web side. */
+  code: string;
+};
+
+export type IncomeCategory = {
+  id:   string;
+  name: string;
+  code: string;
+};
+
+/**
+ * Outgoing money — bills paid, expense receipts, supplier payouts.
+ * Mirrors the web /accounting/payments record (a.k.a. "Expense").
+ */
+export type Expense = {
+  id:                string;
+  ref:               string;
+  date:              string;
+  amount_minor:      number;
+  tax_minor:         number;
+  total_minor:       number;
+  currency:          string;
+  category:          ExpenseCategory;
+  paid_from:         CashAccount;
+  payment_option:    PaymentOption;
+  contact:           ContactRef | null;
+  description:       string | null;
+  internal_remark:   string | null;
+  reconciled:        boolean;
+  share_url:         string;
+};
+
+/**
+ * Non-invoice income — interest, refunds, ad-hoc revenue. Mirrors the
+ * web /accounting/income record.
+ */
+export type IncomeEntry = {
+  id:                string;
+  ref:               string;
+  date:              string;
+  amount_minor:      number;
+  tax_minor:         number;
+  total_minor:       number;
+  currency:          string;
+  category:          IncomeCategory;
+  payment_option:    PaymentOption;
+  contact:           ContactRef | null;
+  description:       string | null;
+  internal_remark:   string | null;
+  reconciled:        boolean;
+  share_url:         string;
+};

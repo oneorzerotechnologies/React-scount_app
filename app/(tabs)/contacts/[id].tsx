@@ -166,14 +166,14 @@ export default function ContactDetailScreen() {
         {isClient && (
           <View style={styles.actionsBlock}>
             <Pressable
-              onPress={() => router.push('/(tabs)/quotations/new')}
+              onPress={() => router.push('/(tabs)/sales/quotations/new')}
               style={({ pressed }) => [styles.secondary, { borderColor: moss[300], backgroundColor: moss[50] }, pressed && { opacity: 0.85 }]}
             >
               <IconSymbol name="doc.text.fill" size={14} color={moss[700]} />
               <Text style={[styles.secondaryText, { color: moss[700] }]}>New quote</Text>
             </Pressable>
             <Pressable
-              onPress={() => router.push('/(tabs)/invoices/new')}
+              onPress={() => router.push('/(tabs)/sales/invoices/new')}
               style={({ pressed }) => [styles.primary, pressed && { opacity: 0.85 }]}
             >
               <IconSymbol name="list.bullet.rectangle.fill" size={14} color="#fff" />

@@ -31,18 +31,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="quotations"
+        name="sales"
         options={{
-          title: 'Quotation',
-          tabBarIcon: ({ color }) => <IconSymbol size={24} name="doc.text.fill" color={color} />,
+          title: 'Sales',
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="cart.fill" color={color} />,
           popToTopOnBlur: true,
         }}
       />
       <Tabs.Screen
-        name="invoices"
+        name="purchase"
         options={{
-          title: 'Invoice',
-          tabBarIcon: ({ color }) => <IconSymbol size={24} name="list.bullet.rectangle.fill" color={color} />,
+          title: 'Purchase',
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="creditcard.fill" color={color} />,
           popToTopOnBlur: true,
         }}
       />

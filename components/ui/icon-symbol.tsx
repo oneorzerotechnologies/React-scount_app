@@ -35,6 +35,11 @@ const MAPPING = {
   'play.fill': 'play-arrow',
   'bolt.fill': 'flash-on',
   'arrow.down.doc': 'file-download',
+  'cart.fill': 'shopping-cart',
+  'creditcard.fill': 'credit-card',
+  'banknote.fill': 'payments',
+  'arrow.down.circle.fill': 'add-circle',
+  'checkmark': 'check',
 } as IconMapping;
 
 /**
