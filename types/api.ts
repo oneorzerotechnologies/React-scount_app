@@ -60,20 +60,33 @@ export type Quotation = QuotationSummary & {
 
 export type ContactType = 'client' | 'supplier';
 
+export type ContactPerson = {
+  id:    string;
+  name:  string;
+  email: string | null;
+  phone: string | null;
+};
+
 export type Contact = {
   id:                 string;
   type:               ContactType;
+  code:               string | null;
   name:               string;
+  registration_no:    string | null;
+  tax_id:             string | null;
   email:              string | null;
   phone:              string | null;
-  tax_id:             string | null;
   address_line1:      string | null;
   address_city:       string | null;
+  address_state:      string | null;
+  address_postcode:   string | null;
+  address_country:    string | null;
   outstanding_minor:  number;
   invoice_count:      number;
   quote_count:        number;
   currency:           string;
   notes:              string | null;
+  persons:            ContactPerson[];
 };
 
 export type InvoiceStatus = 'draft' | 'sent' | 'partially_paid' | 'paid' | 'overdue';

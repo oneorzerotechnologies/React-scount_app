@@ -38,9 +38,18 @@ export default function ContactDetailScreen() {
           <IconSymbol name="chevron.left" size={20} color={palette.text} />
         </Pressable>
         <Text style={[styles.headerName, { color: palette.text }]} numberOfLines={1}>{c.name}</Text>
-        <Pressable hitSlop={6} style={styles.iconBtn}>
-          <IconSymbol name="ellipsis" size={20} color={palette.text} />
-        </Pressable>
+        <View style={styles.headerRight}>
+          <Pressable
+            onPress={() => router.push(`/(tabs)/contacts/new?id=${c.id}`)}
+            hitSlop={6}
+            style={styles.iconBtn}
+          >
+            <IconSymbol name="pencil" size={18} color={moss[700]} />
+          </Pressable>
+          <Pressable hitSlop={6} style={styles.iconBtn}>
+            <IconSymbol name="ellipsis" size={20} color={palette.text} />
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -75,10 +84,54 @@ export default function ContactDetailScreen() {
           {c.phone && (
             <InfoRow icon="phone" value={c.phone} palette={palette} divider />
           )}
-          {c.address_line1 && (
-            <InfoRow icon="mappin" value={`${c.address_line1}, ${c.address_city ?? ''}`} palette={palette} divider />
+          {(c.address_line1 || c.address_city) && (
+            <InfoRow
+              icon="mappin"
+              value={[c.address_line1, c.address_city, c.address_state, c.address_postcode, c.address_country]
+                .filter(Boolean)
+                .join(', ')}
+              palette={palette}
+              divider
+            />
           )}
         </View>
+
+        {/* Identifiers */}
+        {(c.code || c.registration_no || c.tax_id) && (
+          <View style={styles.metaRow}>
+            {c.code && <MetaChip label="CODE" value={c.code} palette={palette} />}
+            {c.registration_no && <MetaChip label="REG NO" value={c.registration_no} palette={palette} />}
+            {c.tax_id && <MetaChip label="TAX NO" value={c.tax_id} palette={palette} />}
+          </View>
+        )}
+
+        {/* Persons */}
+        {c.persons.length > 0 && (
+          <View style={styles.personsBlock}>
+            <Text style={[styles.personsLabel, { color: palette.textMuted }]}>CONTACT PERSONS</Text>
+            <View style={[styles.card, { backgroundColor: palette.surface, borderColor: palette.border }]}>
+              {c.persons.map((p, i) => (
+                <View
+                  key={p.id}
+                  style={[
+                    styles.personRow,
+                    i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: palette.border },
+                  ]}
+                >
+                  <View style={styles.personAvatar}>
+                    <Text style={styles.personAvatarText}>{p.name[0].toUpperCase()}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.personName, { color: palette.text }]} numberOfLines={1}>{p.name}</Text>
+                    <Text style={[styles.personSub, { color: palette.textMuted }]} numberOfLines={1}>
+                      {p.email ?? p.phone ?? '—'}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         {/* Activity summary (clients only) */}
         {isClient && (
@@ -150,7 +203,22 @@ function InfoRow({
       ]}
     >
       <View style={styles.infoDot} />
-      <Text style={[styles.infoValue, { color: palette.text }]} numberOfLines={1}>{value}</Text>
+      <Text style={[styles.infoValue, { color: palette.text }]} numberOfLines={2}>{value}</Text>
+    </View>
+  );
+}
+
+function MetaChip({
+  label, value, palette,
+}: {
+  label:   string;
+  value:   string;
+  palette: typeof Colors.light | typeof Colors.dark;
+}) {
+  return (
+    <View style={[styles.metaChip, { backgroundColor: palette.surface, borderColor: palette.border }]}>
+      <Text style={[styles.metaLabel, { color: palette.textMuted }]}>{label}</Text>
+      <Text style={[styles.metaValue, { color: palette.text }]} numberOfLines={1}>{value}</Text>
     </View>
   );
 }
@@ -167,6 +235,7 @@ const styles = StyleSheet.create({
   },
   iconBtn:    { width: 32, height: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 16 },
   headerName: { flex: 1, fontSize: 13, fontWeight: '700', textAlign: 'center', marginHorizontal: 8 },
+  headerRight:{ flexDirection: 'row' },
 
   heroBlock: { alignItems: 'center', paddingVertical: 8 },
   bigAvatar: {
@@ -181,6 +250,19 @@ const styles = StyleSheet.create({
   typePillText: { fontSize: 9, fontWeight: '800', letterSpacing: 1, fontFamily: 'ui-monospace' },
 
   card: { borderWidth: 1, borderRadius: 12, padding: 0 },
+
+  metaRow:    { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  metaChip:   { borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, minWidth: 90 },
+  metaLabel:  { fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
+  metaValue:  { fontSize: 12, fontWeight: '700', marginTop: 1, fontFamily: 'ui-monospace' },
+
+  personsBlock: { gap: 6 },
+  personsLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
+  personRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10 },
+  personAvatar: { width: 32, height: 32, borderRadius: 8, backgroundColor: moss[500], alignItems: 'center', justifyContent: 'center' },
+  personAvatarText: { color: '#fff', fontSize: 12, fontWeight: '800' },
+  personName:   { fontSize: 13, fontWeight: '700' },
+  personSub:    { fontSize: 11, marginTop: 1 },
 
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 10 },
   infoDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: slate[300] },

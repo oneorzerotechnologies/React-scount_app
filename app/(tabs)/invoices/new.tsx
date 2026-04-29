@@ -14,13 +14,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ContactPicker } from '@/components/shared/contact-picker';
 import { LineItemEditor } from '@/components/shared/line-item-editor';
+import { PersonPicker } from '@/components/shared/person-picker';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { MOCK_CONTACTS } from '@/constants/mock-contacts';
 import { Colors, moss, slate } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { formatDateShort } from '@/lib/dates';
 import { formatMoneyCompact } from '@/lib/money';
-import type { Contact, LineItem } from '@/types/api';
+import type { Contact, ContactPerson, LineItem } from '@/types/api';
 
 export default function NewInvoiceScreen() {
   const palette = Colors[useColorScheme() ?? 'light'];
@@ -33,7 +34,9 @@ export default function NewInvoiceScreen() {
   }, []);
 
   const [pickerOpen,   setPickerOpen]   = useState(false);
+  const [personOpen,   setPersonOpen]   = useState(false);
   const [contact,      setContact]      = useState<Contact | null>(MOCK_CONTACTS[0]);
+  const [person,       setPerson]       = useState<ContactPerson | null>(null);
   const [items,        setItems]        = useState<LineItem[]>([
     { name: 'Audit retainer', description: 'April retainer · scope per SOW', quantity: 1, unit_price_minor: 800_000, tax_code: 'SST6', line_total_minor: 800_000 },
   ]);
@@ -55,7 +58,7 @@ export default function NewInvoiceScreen() {
 
   const onSave = () => {
     // eslint-disable-next-line no-console
-    console.log('Save invoice', { contact, items, terms, remarks, internalNote });
+    console.log('Save invoice', { contact, person, items, terms, remarks, internalNote });
     router.back();
   };
 
@@ -96,6 +99,36 @@ export default function NewInvoiceScreen() {
               <IconSymbol name="chevron.right" size={14} color={slate[400]} />
             </Pressable>
           </Section>
+
+          {contact && (
+            <Section label="Contact person" palette={palette}>
+              <Pressable
+                onPress={() => setPersonOpen(true)}
+                style={({ pressed }) => [
+                  styles.contactBtn,
+                  { backgroundColor: palette.surface, borderColor: person ? moss[400] : palette.border },
+                  pressed && { opacity: 0.85 },
+                ]}
+              >
+                <View style={[styles.contactAvatar, !person && { backgroundColor: palette.border }]}>
+                  <Text style={[styles.contactAvatarText, !person && { color: palette.textMuted }]}>
+                    {person ? person.name[0].toUpperCase() : '—'}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.contactName, { color: palette.text }]} numberOfLines={1}>
+                    {person ? person.name : 'Pick a person (optional)'}
+                  </Text>
+                  {person?.email && (
+                    <Text style={[styles.personSub, { color: palette.textMuted }]} numberOfLines={1}>
+                      {person.email}
+                    </Text>
+                  )}
+                </View>
+                <IconSymbol name="chevron.right" size={14} color={slate[400]} />
+              </Pressable>
+            </Section>
+          )}
 
           <View style={styles.dateGrid}>
             <DateChip label="Issued"   value={formatDateShort(today)}    palette={palette} />
@@ -218,8 +251,17 @@ export default function NewInvoiceScreen() {
         visible={pickerOpen}
         contacts={MOCK_CONTACTS}
         filter="client"
-        onSelect={(c) => { setContact(c); setPickerOpen(false); }}
+        onSelect={(c) => { setContact(c); setPerson(null); setPickerOpen(false); }}
         onClose={() => setPickerOpen(false)}
+      />
+
+      <PersonPicker
+        visible={personOpen}
+        persons={contact?.persons ?? []}
+        contactName={contact?.name ?? ''}
+        onSelect={(p) => { setPerson(p); setPersonOpen(false); }}
+        onClear={() => { setPerson(null); setPersonOpen(false); }}
+        onClose={() => setPersonOpen(false)}
       />
     </SafeAreaView>
   );
@@ -296,6 +338,7 @@ const styles = StyleSheet.create({
   contactAvatar: { width: 28, height: 28, borderRadius: 8, backgroundColor: moss[500], alignItems: 'center', justifyContent: 'center' },
   contactAvatarText: { color: '#fff', fontSize: 12, fontWeight: '800' },
   contactName: { flex: 1, fontSize: 13, fontWeight: '600' },
+  personSub:   { fontSize: 11, marginTop: 1 },
 
   dateGrid: { flexDirection: 'row', gap: 8, marginTop: 12 },
   dateChip: { flex: 1, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8 },
